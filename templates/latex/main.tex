@@ -411,7 +411,7 @@ auto ST_init = [&]() -> void {
     for (int i = 1; i <= n; i++) {
         f[i][0] = a[i];
         if (i > 1) Log2[i] = Log2[i / 2] + 1;
-    };
+    }
     int t = Log2[n];
     for (int j = 1; j <= t; j++) {
         for (int i = 1; i <= n - (1 << j) + 1) {
@@ -457,6 +457,7 @@ auto ST_init = [&]() -> void {
         }
     }
 };
+
 auto ST_query = [&](int x1, int y1, int x2, int y2) -> int {
     int ki = Log2[x2 - x1 + 1], kj = Log2[y2 - y1 + 1];
     int t1 = f[x1][y1][ki][kj];
@@ -518,75 +519,6 @@ ans = query(x) * (x + 1) - query(x);
 
 \subsection{ 线段树 }
 包括 $build$, $push\_up$, $push\_down$, $modify$, $query$ 五个函数. 
-\subsubsection{ 单点修改 }
-求满足 $i < j < k$ 且 $a_i < a_j < a_k$ 的三元组的个数. 
-\begin{lstlisting}[style = cpp]
-// Problem: 洛谷: P1637 三元上升子序列
-
-int n, m, a[N], per[N], suf[N];
-LL ans;
-
-struct node{
-	int l, r, sum;
-}tree[N * 4];
-
-void push_up(int u){
-	tree[u].sum = tree[u << 1].sum + tree[u << 1 | 1].sum;
-}
-
-void build(int u, int l, int r){
-	tree[u] = {l, r, 0};
-	if(l != r){
-		int mid = (l + r) >> 1;
-		build(u << 1, l, mid), build(u << 1 | 1, mid + 1, r);
-		push_up(u);
-	}
-}
-
-void modify(int u, int x, int v){
-	if(tree[u].l == x && tree[u].r == x){
-		tree[u].sum += v;
-		return;
-	}
-	int mid = (tree[u].l + tree[u].r) >> 1;
-	if(x <= mid) modify(u << 1, x, v);
-	else modify(u << 1 | 1, x, v);
-	push_up(u);
-}
-
-int query(int u, int l, int r){
-	int L = tree[u].l, R = tree[u].r;
-	if(l <= L && R <= r) return tree[u].sum;
-	int mid = (L + R) >> 1, ans = 0;
-	if(l <= mid) ans = query(u << 1, l, r);
-	if(r > mid) ans += query(u << 1 | 1, l, r);
-	return ans;
-}
-
-int main(){
-	
-	ios::sync_with_stdio(false);
- 	cin.tie(0);
- 	cout.tie(0);
-	
-	build(1, 1, 100000);
-    cin >> n;
-    rep(i, 1, n){
-    	cin >> a[i];
-    	modify(1, a[i], 1);
-    	if(a[i] > 1) per[i] = query(1, 1, a[i] - 1);
-    }
-    build(1, 1, 100000);
-    per(i, n, 1){
-    	modify(1, a[i], 1);
-    	if(a[i] < 100000) suf[i] = query(1, a[i] + 1, 100000);
-    }
-    rep(i, 1, n) ans += (LL)per[i] * suf[i];
-    cout << ans << endl;
-     
-    return 0;
-}
-\end{lstlisting}
 
 \subsubsection{ 区间修改 (带 $add$ 的 $lazy\_tag $) }
 $n$ 个数, $m$ 次操作, 操作分为:
@@ -597,88 +529,136 @@ $n$ 个数, $m$ 次操作, 操作分为:
 \end{itemize}
 
 \begin{lstlisting}[style = cpp]
-// Problem: 洛谷: P3372 【模板】线段树 1
+// Problem: P3372 【模板】线段树 1
+struct Info {
+    LL sum = 0;
 
-int n, m, op, l, r;
-LL a[N], k;
+    Info(LL _sum = 0) : sum(_sum) {}
 
-struct node{
-	int l, r;
-	LL sum, add;
-}tree[N * 4];
+    Info operator+(const Info& b) const { return Info(sum + b.sum); }
+};
 
-void push_up(int u){
-	tree[u].sum = tree[u << 1].sum + tree[u << 1 | 1].sum;
-}
+struct Tag {
+    LL add = 0;
 
-void push_down(int u){
-	auto &root = tree[u], &left = tree[u << 1], &right = tree[u << 1 | 1];
-	left.sum += (LL)(left.r - left.l + 1) * root.add;
-	right.sum += (LL)(right.r - right.l + 1) * root.add;
-	left.add += root.add, right.add += root.add;
-	root.add = 0;
-}
+    Tag(LL _add = 0) : add(_add) {}
 
-void build(int u, int l, int r){
-	if(l == r) tree[u] = {l, l, a[l], 0};
-	else{
-		tree[u] = {l, r, 0, 0};
-		int mid = (l + r) >> 1;
-		build(u << 1, l, mid), build(u << 1 | 1, mid + 1, r);
-		push_up(u);
-	}
-}
+    bool operator==(const Tag& b) const { return add == b.add; }
+};
 
-void modify(int u, int l, int r, LL k){
-	int L = tree[u].l, R = tree[u].r;
-	if(l <= L && R <= r){
-		tree[u].sum += (LL)(R - L + 1) * k;
-		tree[u].add += k;
-	}
-	else{
-		push_down(u);
-		int mid = (L + R) >> 1;
-		if(l <= mid) modify(u << 1, l, r, k);
-		if(r > mid) modify(u << 1 | 1, l, r, k);
-		push_up(u);
-	}
-}
+void infoApply(Info& a, int l, int r, const Tag& tag) { a.sum += 1ll * (r - l + 1) * tag.add; }
 
-LL query(int u, int l, int r){
-	int L = tree[u].l, R = tree[u].r;
-	if(l <= L && R <= r){
-		return tree[u].sum;
-	}
-	else{
-		push_down(u);
-		int mid = (L + R) >> 1;
-		LL ans= 0;
-		if(l <= mid) ans = query(u << 1, l, r);
-		if(r > mid) ans += query(u << 1 | 1, l, r);
-		return ans;
-	}
-}
+void tagApply(Tag& a, int l, int r, const Tag& tag) { a.add += tag.add; }
 
-int main(){
-	
-	ios::sync_with_stdio(false);
- 	cin.tie(0);
- 	cout.tie(0);
-	
-    cin >> n >> m;
-    rep(i, 1, n){
-    	cin >> a[i];
+template <class Info, class Tag>
+class segTree {
+#define ls i << 1
+#define rs i << 1 | 1
+#define mid ((l + r) >> 1)
+#define lson ls, l, mid
+#define rson rs, mid + 1, r
+
+    int n;
+    std::vector<Info> info;
+    std::vector<Tag> tag;
+
+    public:
+    segTree(const std::vector<Info>& init) : n(init.size() - 1) {
+        assert(n > 0);
+        info.resize(4 << std::__lg(n));
+        tag.resize(4 << std::__lg(n));
+        auto build = [&](auto dfs, int i, int l, int r) {
+            if (l == r) {
+                info[i] = init[l];
+                return;
+            }
+            dfs(dfs, lson);
+            dfs(dfs, rson);
+            push_up(i);
+        };
+        build(build, 1, 1, n);
     }
-    build(1, 1, n);
-    rep(i, 1, m){
-    	cin >> op >> l >> r;
-    	if(op == 2) cout << query(1, l, r) << endl;
-    	else{
-    		cin >> k;
-    		modify(1, l, r, k);
-    	}
+
+
+    private:
+    void push_up(int i) { info[i] = info[ls] + info[rs]; }
+
+
+    template <class... T>
+    void apply(int i, int l, int r, const T&... val) {
+        ::infoApply(info[i], l, r, val...);
+        ::tagApply(tag[i], l, r, val...);
     }
-    
+
+    void push_down(int i, int l, int r) {
+        if (tag[i] == Tag{}) return;
+        apply(lson, tag[i]);
+        apply(rson, tag[i]);
+        tag[i] = {};
+    }
+
+    public:
+    template <class... T>
+    void rangeMerge(int ql, int qr, const T&... val) {
+        auto dfs = [&](auto dfs, int i, int l, int r) {
+            if (qr < l or r < ql) return;
+            if (ql <= l and r <= qr) {
+                apply(i, l, r, val...);
+                return;
+            }
+            push_down(i, l, r);
+            dfs(dfs, lson);
+            dfs(dfs, rson);
+            push_up(i);
+        };
+        dfs(dfs, 1, 1, n);
+    }
+
+    Info rangeQuery(int ql, int qr) {
+        Info res{};
+        auto dfs = [&](auto dfs, int i, int l, int r) {
+            if (qr < l or r < ql) return;
+            if (ql <= l and r <= qr) {
+                res = res + info[i];
+                return;
+            }
+            push_down(i, l, r);
+            dfs(dfs, lson);
+            dfs(dfs, rson);
+        };
+        dfs(dfs, 1, 1, n);
+        return res;
+    }
+
+#undef rson
+#undef lson
+#undef mid
+#undef rs
+#undef ls
+};
+
+int main() {
+    std::ios::sync_with_stdio(false);
+    std::cin.tie(0);
+    std::cout.tie(0);
+
+    int n, m;
+    std::cin >> n >> m;
+    std::vector<Info> a(n + 1);
+    for (int i = 1; i <= n; i++) std::cin >> a[i].sum;
+    static segTree<Info, Tag> tr(a);
+
+    while (m--) {
+        int op, k, l, r;
+        std::cin >> op >> l >> r;
+        if (op == 1) {
+            std::cin >> k;
+            tr.rangeMerge(l, r, Tag(k));
+        } else {
+            std::cout << tr.rangeQuery(l, r).sum << endl;
+        }
+    }
+
     return 0;
 }
 \end{lstlisting}
@@ -693,95 +673,145 @@ $n$ 个数, $m$ 次操作, 操作分为:
 \end{itemize}
 
 \begin{lstlisting}[style = cpp]
-// Problem: 洛谷: P3373 【模板】线段树 2
+// Problem: P3373 【模板】线段树 2
 
-int n, m, l, r, op;
-LL a[N], p, k;
+struct Info {
+    LL sum = 0;
 
-struct node{
-	int l, r;
-	LL sum, add, mul; 
-}tree[N * 4];
+    Info(LL _sum = 0) : sum(_sum) {}
 
-void push_up(int u){
-	tree[u].sum = (tree[u << 1].sum + tree[u << 1 | 1].sum) % p;
+    Info operator+(const Info& b) const { return Info(add(sum + b.sum)); }
+};
+
+struct Tag {
+    LL add = 0, mul = 1;
+
+    Tag(LL _add = 0, LL _mul = 1) : add(_add), mul(_mul) {}
+
+    bool operator==(const Tag& b) const { return add == b.add and mul == b.mul; }
+};
+
+void infoApply(Info& a, int l, int r, const Tag& tag) {
+    a.sum = add(mul(a.sum, tag.mul), mul((r - l + 1), tag.add));
 }
 
-void operate(node &root, LL add, LL mul){
-	root.sum = (root.sum * mul + (LL)(root.r - root.l + 1) * add) % p;
-	root.add = (root.add * mul + add) % p;
-	root.mul = root.mul * mul % p;
+void tagApply(Tag& a, int l, int r, const Tag& tag) {
+    a.add = add(mul(a.add, tag.mul), tag.add);
+    a.mul = mul(a.mul, tag.mul);
 }
 
-void push_down(int u){
-	operate(tree[u << 1], tree[u].add, tree[u].mul);
-	operate(tree[u << 1 | 1], tree[u].add, tree[u].mul);
-	tree[u].add = 0, tree[u].mul = 1;
-}
+template <class Info, class Tag>
+class segTree {
+#define ls i << 1
+#define rs i << 1 | 1
+#define mid ((l + r) >> 1)
+#define lson ls, l, mid
+#define rson rs, mid + 1, r
 
-void build(int u, int l, int r){
-	if(l == r){
-		tree[u] = {l, l, a[l], 0, 1};
-	}
-	else{
-		tree[u] = {l, r, 0, 0, 1};
-		int mid = (l + r) >> 1;
-		build(u << 1, l, mid), build(u << 1 | 1, mid + 1, r);
-		push_up(u);
-	}
-}
+    int n;
+    std::vector<Info> info;
+    std::vector<Tag> tag;
 
-void modify(int u, int l, int r, LL add, LL mul){
-	int L = tree[u].l, R = tree[u].r;
-	if(l <= L && R <= r){
-		operate(tree[u], add, mul);
-	}
-	else{
-		push_down(u);
-		int mid = (L + R) >> 1;
-		if(l <= mid) modify(u << 1, l, r, add, mul);
-		if(r > mid) modify(u << 1 | 1, l, r, add, mul);
-		push_up(u);
-	}
-}
-
-LL query(int u, int l, int r){
-	int L = tree[u].l, R = tree[u].r;
-	if(l <= L && R <= r){
-		return tree[u].sum;
-	}
-	else{
-		push_down(u);
-		int mid = (L + R) >> 1;
-		LL ans = 0;
-		if(l <= mid) ans = query(u << 1, l, r);
-		if(r > mid) ans = (ans + query(u << 1 | 1, l, r)) % p;
-		return ans;
-	}
-}
-
-int main(){
-	
-	ios::sync_with_stdio(false);
- 	cin.tie(0);
- 	cout.tie(0);
-	
-    cin >> n >> m >> p;
-    rep(i, 1, n) cin >> a[i];
-    build(1, 1, n);
-    rep(i, 1, m){
-    	cin >> op >> l >> r;
-    	if(op == 1){
-    		cin >> k; 
-    		modify(1, l, r, 0, k);
-    	}
-    	else if(op == 2){
-    		cin >> k;
-    		modify(1, l, r, k, 1);
-    	}
-    	else cout << query(1, l, r) << endl;
+    public:
+    segTree(const std::vector<Info>& init) : n(init.size() - 1) {
+        assert(n > 0);
+        info.resize(4 << std::__lg(n));
+        tag.resize(4 << std::__lg(n));
+        auto build = [&](auto dfs, int i, int l, int r) {
+            if (l == r) {
+                info[i] = init[l];
+                return;
+            }
+            dfs(dfs, lson);
+            dfs(dfs, rson);
+            push_up(i);
+        };
+        build(build, 1, 1, n);
     }
-    
+
+
+    private:
+    void push_up(int i) { info[i] = info[ls] + info[rs]; }
+
+
+    template <class... T>
+    void apply(int i, int l, int r, const T&... val) {
+        ::infoApply(info[i], l, r, val...);
+        ::tagApply(tag[i], l, r, val...);
+    }
+
+    void push_down(int i, int l, int r) {
+        if (tag[i] == Tag{}) return;
+        apply(lson, tag[i]);
+        apply(rson, tag[i]);
+        tag[i] = {};
+    }
+
+    public:
+    template <class... T>
+    void rangeMerge(int ql, int qr, const T&... val) {
+        auto dfs = [&](auto dfs, int i, int l, int r) {
+            if (qr < l or r < ql) return;
+            if (ql <= l and r <= qr) {
+                apply(i, l, r, val...);
+                return;
+            }
+            push_down(i, l, r);
+            dfs(dfs, lson);
+            dfs(dfs, rson);
+            push_up(i);
+        };
+        dfs(dfs, 1, 1, n);
+    }
+
+    Info rangeQuery(int ql, int qr) {
+        Info res{};
+        auto dfs = [&](auto dfs, int i, int l, int r) {
+            if (qr < l or r < ql) return;
+            if (ql <= l and r <= qr) {
+                res = res + info[i];
+                return;
+            }
+            push_down(i, l, r);
+            dfs(dfs, lson);
+            dfs(dfs, rson);
+        };
+        dfs(dfs, 1, 1, n);
+        return res;
+    }
+
+#undef rson
+#undef lson
+#undef mid
+#undef rs
+#undef ls
+};
+
+int main() {
+    std::ios::sync_with_stdio(false);
+    std::cin.tie(0);
+    std::cout.tie(0);
+
+    int n, m, p;
+    std::cin >> n >> m >> p;
+    std::vector<Info> a(n + 1);
+    for (int i = 1; i <= n; i++) std::cin >> a[i].sum;
+    static segTree<Info, Tag> tr(a);
+
+    while (m--) {
+        int op, k, l, r;
+        std::cin >> op >> l >> r;
+        if (op == 1) {
+            std::cin >> k;
+            tr.rangeMerge(l, r, Tag(0, k));
+        } else if (op == 2) {
+            std::cin >> k;
+            tr.rangeMerge(l, r, Tag(k, 1));
+        } else {
+            std::cout << tr.rangeQuery(l, r).sum << endl;
+        }
+    }
+
     return 0;
 }
 \end{lstlisting}
@@ -792,27 +822,20 @@ int main(){
 需要修改的内容: Info 和 Tag 两个 struct 以及 infoApply 和 tagApple 两个函数.
 \begin{lstlisting}[style=cpp]
 struct Info {
-    LL sum = 0, maxx = 0;
-
-    Info(LL _sum = 0, LL _maxx = 0) : sum(_sum), maxx(_maxx) {}
-
-    Info operator+(const Info& b) const { return Info(sum + b.sum, std::max(maxx, b.maxx)); }
+    // 重载 operator+ //
 };
 
 struct Tag {
-    LL add = 0;
-
-    Tag(LL _add = 0) : add(_add) {}
-
-    bool operator==(const Tag& b) const { return add == b.add; }
+    // 重载 operator== //
 };
 
 void infoApply(Info& a, int l, int r, const Tag& tag) {
-    a.sum += 1ll * (r - l + 1) * tag.add;
-    a.maxx += tag.add;
+    
 }
 
-void tagApply(Tag& a, int l, int r, const Tag& tag) { a.add += tag.add; }
+void tagApply(Tag& a, int l, int r, const Tag& tag) {
+    
+}
 
 template <class Info, class Tag>
 class segTree {
@@ -2998,6 +3021,31 @@ auto get_next = [&](string s) -> vi {
 	\item $next[n-1] = n$;
 	\item $next[n-1] \neq n$, 但计算出来的并不是循环节, 暴力判断一下.
 \end{enumerate}
+
+\subsection{ Z 函数 }
+
+这一节的 $string$ 都是从 $0$ 开始计数. 
+
+\subsubsection{ 计算 $z$ 数组 }
+\begin{lstlisting}[style=cpp]
+auto z_function = [&](const std::string& s) -> vi {
+    int n = s.size();
+    vi z(n);
+    for (int i = 1, l = 0, r = 0; i < n; i++) {
+        if (i <= r and z[i - l] < r - i + 1) {
+            z[i] = z[i - l];
+        } else {
+            z[i] = std::max(0, r - i + 1);
+            while (z[i] + i < n and s[z[i]] == s[z[i] + i]) z[i]++;
+        }
+        if (z[i] + i - 1 > r) {
+            l = i;
+            r = z[i] + i - 1;
+        }
+    }
+    return z;
+};
+\end{lstlisting}
 
 \newpage
 \section{ 数学 - 多项式 }
@@ -6403,12 +6451,18 @@ tandu struct pnt {
     pnt operator+(const pnt& a) const { return pnt(x + a.x, y + a.y); }
 
     pnt operator-(const pnt& a) const { return pnt(x - a.x, y - a.y); }
+
     /*
-	bool operator<(const pnt& a) const {
-        if (fabs(x - a.x) < eps) return y < a.y;
+    bool operator<(const pnt& a) const {
+        if (std::is_same<T, double>::value) {
+            if (fabs(x - a.x) < eps) return y < a.y;
+        } else {
+            if (x == a.x) return y < a.y;
+        }
         return x < a.x;
     }
     */
+
     // 注意数乘会不会爆 int //
     pnt operator*(const T k) const { return pnt(k * x, k * y); }
 
@@ -6420,13 +6474,42 @@ tandu struct pnt {
 
     U len() { return dist(pnt(0, 0)); }
 
-    // 两向量夹角, 返回 cos 值 //
+    // a, b, c 成逆时针 //
+    friend U area(pnt a, pnt b, pnt c) { return (b - a) ^ (c - a); }
+
+    // 两向量夹角，返回 cos 值 //
     double get_angle(pnt a) {
         return (double) (pnt(x, y) * a) / sqrt((double) pnt(x, y).len() * (double) a.len());
     }
 };
-
 typedef pnt<LL, LL> point;
+\end{lstlisting}
+
+\subsubsection{ 线段 }
+\begin{lstlisting}
+struct line {
+    point a, b;
+
+    line(point _a = {}, point _b = {}) { a = _a, b = _b; }
+
+    // 交点类型为 double //
+    friend point iPoint(line p, line q) {
+        point v1 = p.b - p.a;
+        point v2 = q.b - q.a;
+        point u = q.a - p.a;
+        return q.a + (q.b - q.a) * ((u ^ v1) * 1. / (v1 ^ v2));
+    }
+
+    // 极角排序 //
+    bool operator<(const line& p) const {
+        double t1 = std::atan2((b - a).y, (b - a).x);
+        double t2 = std::atan2((p.b - p.a).y, (p.b - p.a).x);
+        if (fabs(t1 - t2) > eps) {
+            return t1 < t2;
+        }
+        return ((p.a - a) ^ (p.b - a)) > eps;
+    }
+};
 \end{lstlisting}
 
 \subsection{ 凸包 }
@@ -6454,6 +6537,45 @@ auto andrew = [&]() -> std::vector<point> {
     return stk;
 };
 auto convex = andrew();
+\end{lstlisting}
+
+\subsection{ 半平面交 }
+\begin{lstlisting}
+// half plain intersection //
+auto halfPlain = [&](std::vector<line>& ln) -> std::vector<point> {
+    std::sort(all(ln));
+    ln.erase(
+        unique(
+            all(ln),
+            [](line& p, line& q) {
+                double t1 = std::atan2((p.b - p.a).y, (p.b - p.a).x);
+                double t2 = std::atan2((q.b - q.a).y, (q.b - q.a).x);
+                return fabs((t1 - t2)) < eps;
+            }),
+        ln.end());
+    auto check = [&](line p, line q, line r) -> bool {
+        point a = iPoint(p, q);
+        return ((r.b - r.a) ^ (a - r.a)) < -eps;
+    };
+    line q[ln.size() + 2];
+    int hh = 1, tt = 0;
+    q[++tt] = ln[0];
+    q[++tt] = ln[1];
+    for (int i = 2; i < (int) ln.size(); i++) {
+        while (hh < tt and check(q[tt - 1], q[tt], ln[i])) tt--;
+        while (hh < tt and check(q[hh + 1], q[hh], ln[i])) hh++;
+        q[++tt] = ln[i];
+    }
+    while (hh < tt and check(q[tt - 1], q[tt], q[hh])) tt--;
+    while (hh < tt and check(q[hh + 1], q[hh], q[tt])) hh++;
+    q[tt + 1] = q[hh];
+    std::vector<point> ans;
+    for (int i = hh; i <= tt; i++) {
+        ans.push_back(iPoint(q[i], q[i + 1]));
+    }
+    return ans;
+};
+auto p = halfPlain(ln);
 \end{lstlisting}
 
 \newpage
