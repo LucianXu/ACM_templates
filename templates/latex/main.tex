@@ -168,23 +168,6 @@
 
 #include <bits/stdc++.h>
 
-// using namespace std;
-
-typedef unsigned int UI;
-typedef unsigned long long ULL;
-typedef long long LL;
-typedef unsigned long long ULL;
-typedef __int128 i128;
-typedef std::pair<int, int> PII;
-typedef std::pair<int, LL> PIL;
-typedef std::pair<LL, int> PLI;
-typedef std::pair<LL, LL> PLL;
-typedef std::vector<int> vi;
-typedef std::vector<vi> vvi;
-typedef std::vector<LL> vl;
-typedef std::vector<vl> vvl;
-typedef std::vector<PII> vpi;
-
 #define typet typename T
 #define typeu typename U
 #define types typename... Ts
@@ -193,9 +176,23 @@ typedef std::vector<PII> vpi;
 #define temps template <types>
 #define tandu template <typet, typeu>
 
+using UI = unsigned int;
+using ULL = unsigned long long;
+using LL = long long;
+using ULL = unsigned long long;
+using i128 = __int128;
+using PII = std::pair<int, int>;
+using PIL = std::pair<int, LL>;
+using PLI = std::pair<LL, int>;
+using PLL = std::pair<LL, LL>;
+using vi = std::vector<int>;
+using vvi = std::vector<vi>;
+using vl = std::vector<LL>;
+using vvl = std::vector<vl>;
+using vpi = std::vector<PII>;
+
 #define ff first
 #define ss second
-#define endl '\n'
 #define all(v) v.begin(), v.end()
 #define rall(v) v.rbegin(), v.rend()
 
@@ -215,6 +212,94 @@ constexpr double pi = 3.141592653589793;
 constexpr double eps = 1e-6;
 
 constexpr int lowbit(int x) { return x & -x; }
+tandu bool Max(T& x, const U& y) { return x < y ? x = y, true : false; }
+tandu bool Min(T& x, const U& y) { return x > y ? x = y, true : false; }
+
+template <int P>
+struct Mint {
+    int v = 0;
+
+    // reflection
+    template <typet = int>
+    constexpr operator T() const {
+        return v;
+    }
+
+    // constructor //
+    constexpr Mint() = default;
+    template <typet>
+    constexpr Mint(T x) : v(x % P) {}
+
+    // io //
+    friend std::istream& operator>>(std::istream& is, Mint& x) {
+        LL y;
+        is >> y;
+        x = y;
+        return is;
+    }
+    friend std::ostream& operator<<(std::ostream& os, Mint x) { return os << x.v; }
+
+    // comparision //
+    friend constexpr bool operator==(Mint lhs, Mint rhs) { return lhs.v == rhs.v; }
+    friend constexpr bool operator!=(Mint lhs, Mint rhs) { return lhs.v != rhs.v; }
+    friend constexpr bool operator<(Mint lhs, Mint rhs) { return lhs.v < rhs.v; }
+    friend constexpr bool operator<=(Mint lhs, Mint rhs) { return lhs.v <= rhs.v; }
+    friend constexpr bool operator>(Mint lhs, Mint rhs) { return lhs.v > rhs.v; }
+    friend constexpr bool operator>=(Mint lhs, Mint rhs) { return lhs.v >= rhs.v; }
+
+    // arithmetic //
+    friend constexpr Mint operator+(Mint lhs, Mint rhs) {
+        return lhs.v + rhs.v <= P ? lhs.v + rhs.v : lhs.v - P + rhs.v;
+    }
+    friend constexpr Mint operator-(Mint lhs, Mint rhs) {
+        return lhs.v < rhs.v ? lhs.v + P - rhs.v : lhs.v - rhs.v;
+    }
+    friend constexpr Mint operator*(Mint lhs, Mint rhs) {
+        return static_cast<LL>(lhs.v) * rhs.v % P;
+    }
+    constexpr Mint operator+=(Mint rhs) { return v = v + rhs; }
+    constexpr Mint operator-=(Mint rhs) { return v = v - rhs; }
+    constexpr Mint operator*=(Mint rhs) { return v = v * rhs; }
+    friend constexpr Mint operator&(Mint lhs, Mint rhs) { return lhs.v & rhs.v; }
+    friend constexpr Mint operator|(Mint lhs, Mint rhs) { return lhs.v | rhs.v; }
+    friend constexpr Mint operator^(Mint lhs, Mint rhs) { return lhs.v ^ rhs.v; }
+    friend constexpr Mint operator>>(Mint lhs, Mint rhs) { return lhs.v >> rhs.v; }
+    friend constexpr Mint operator<<(Mint lhs, Mint rhs) { return lhs.v << rhs.v; }
+    constexpr Mint operator&=(Mint rhs) { return v = v & rhs; }
+    constexpr Mint operator|=(Mint rhs) { return v = v | rhs; }
+    constexpr Mint operator^=(Mint rhs) { return v = v ^ rhs; }
+    constexpr Mint operator>>=(Mint rhs) { return v = v >> rhs; }
+    constexpr Mint operator<<=(Mint rhs) { return v = v << rhs; }
+    friend constexpr Mint power(Mint a, Mint n) {
+        Mint ans = 1;
+        while (n) {
+            if (n & 1) ans *= a;
+            a *= a;
+            n >>= 1;
+        }
+        return ans;
+    }
+    friend constexpr Mint inv(Mint rhs) { return power(rhs, P - 2); }
+    friend constexpr Mint operator/(Mint lhs, Mint rhs) { return lhs * inv(rhs); }
+    constexpr Mint operator/=(Mint rhs) { return v = v / rhs; }
+};
+using Z = Mint<998244353>;
+
+int main() {
+    std::ios::sync_with_stdio(false);
+    std::cin.tie(0);
+    std::cout.tie(0);
+
+    int t = 1;
+    std::cin >> t;
+    while (t--) {
+        
+    }
+    return 0;
+}
+\end{lstlisting}
+短一点的 $\mathbb{F}_p$ 上的运算.
+\begin{lstlisting}[style=cpp]
 constexpr int add(int x, int y) { return x + y < mod ? x + y : x - mod + y; }
 constexpr int sub(int x, int y) { return x < y ? mod + x - y : x - y; }
 constexpr int mul(LL x, int y) { return x * y % mod; }
@@ -237,24 +322,9 @@ temps constexpr int mul(Ts... x) {
     int y = 1;
     (..., Mul(y, x));
     return y;
-}
-
-tandu bool Max(T& x, const U& y) { return x < y ? x = y, true : false; }
-tandu bool Min(T& x, const U& y) { return x > y ? x = y, true : false; }
-
-int main() {
-    std::ios::sync_with_stdio(false);
-    std::cin.tie(0);
-    std::cout.tie(0);
-
-    int t = 1;
-    std::cin >> t;
-    while (t--) {
-        
-    }
-    return 0;
-}
+}    
 \end{lstlisting}
+
 
 \subsection{ debug.h 文件 }
 
@@ -414,7 +484,7 @@ auto ST_init = [&]() -> void {
     }
     int t = Log2[n];
     for (int j = 1; j <= t; j++) {
-        for (int i = 1; i <= n - (1 << j) + 1) {
+        for (int i = 1; i <= n - (1 << j) + 1; i++) {
             f[i][j] = std::max(f[i][j - 1], f[i + (1 << (j - 1))][j - 1]);
         }
     }
@@ -4716,7 +4786,7 @@ auto dijkstra = [&](int s) -> vl {
         q.pop();
         if (vis[u]) continue;
         vis[u] = 1;
-        for (auto [v, w] : e[u]) {
+        for (const auto& [v, w] : e[u]) {
             if (dist[v] > dis + w) {
                 dist[v] = dis + w;
                 q.emplace(dist[v], v);
@@ -4725,6 +4795,76 @@ auto dijkstra = [&](int s) -> vl {
     }
     return dist;
 };
+\end{lstlisting}
+
+Johnson
+\begin{lstlisting}[style=cpp]
+// Johnson 全源最短路 //
+
+// 负环 //
+vl dist1(n + 1);
+vi vis(n + 1), cnt(n + 1);
+auto spfa = [&]() -> bool {
+    std::queue<int> q;
+    for (int u = 1; u <= n; u++) {
+        q.push(u);
+        vis[u] = false;
+    }
+    while (!q.empty()) {
+        auto u = q.front();
+        q.pop();
+        vis[u] = false;
+        for (auto [v, w] : e[u]) {
+            if (dist1[v] > dist1[u] + w) {
+                dist1[v] = dist1[u] + w;
+                Max(cnt[v], cnt[u] + 1);
+                if (cnt[v] >= n) return true;
+                if (!vis[v]) {
+                    q.push(v);
+                    vis[v] = true;
+                }
+            }
+        }
+    }
+    return false;
+};
+
+// dijkstra //
+vl dist2(n + 1);
+auto dijkstra = [&](int s) {
+    for (int u = 1; u <= n; u++) {
+        dist2[u] = 1e9;
+        vis[u] = false;
+    }
+    dist2[s] = 0;
+    std::priority_queue<PLI, std::vector<PLI>, std::greater<PLI>> q;
+    q.emplace(0, s);
+    while (!q.empty()) {
+        auto [d, u] = q.top();
+        q.pop();
+        if (vis[u]) continue;
+        vis[u] = true;
+        for (const auto& [v, w] : e[u]) {
+            if (dist2[v] > d + w) {
+                dist2[v] = d + w;
+                q.emplace(dist2[v], v);
+            }
+        }
+    }
+};
+
+if (spfa()) {
+    std::cout << -1 << '\n';
+    return;
+}
+for (int u = 1; u <= n; u++) {
+    for (auto& [v, w] : e[u]) {
+        w += dist1[u] - dist1[v];
+    }
+}
+for (int u = 1; u <= n; u++) {
+    dijkstra(u);
+}
 \end{lstlisting}
 
 \subsubsection{ 最短路计数 }
@@ -4742,7 +4882,7 @@ auto dijkstra = [&](int s) -> std::pair<vl, vi> {
         q.pop();
         if (vis[u]) continue;
         vis[u] = 1;
-        for (auto [v, w] : e[u]) {
+        for (const auto& [v, w] : e[u]) {
             if (dist[v] > dis + w) {
                 dist[v] = dis + w;
                 cnt[v] = cnt[u];
@@ -4782,7 +4922,7 @@ auto floyd() = [&] -> std::pair<vvi, vvi> {
         }
     }
     return {dist, cnt};
-}
+};
 \end{lstlisting}
 
 \subsubsection{ 负环 }
@@ -4798,7 +4938,7 @@ auto spfa = [&]() -> bool {
         auto u = q.front();
         q.pop();
         vis[u] = 0;
-        for (auto [v, w] : e[u]) {
+        for (const auto& [v, w] : e[u]) {
             if (dist[v] > dist[u] + w) {
                 dist[v] = dist[u] + w;
                 cnt[v] = cnt[u] + 1;
@@ -4811,7 +4951,7 @@ auto spfa = [&]() -> bool {
         }
     }
     return false;
-}
+};
 \end{lstlisting}
 
 \subsubsection{ 分层最短路 }
@@ -4974,7 +5114,7 @@ int timestamp = 0, bcc = 0, root = 0;
 std::function<void(int, int)> tarjan = [&](int u, int fa) {
     dfn[u] = low[u] = ++timestamp;
     int child = 0;
-    for (auto v : e[u]) {
+    for (const auto& v : e[u]) {
         if (!dfn[v]) {
             tarjan(v, u);
             low[u] = std::min(low[u], low[v]);

@@ -17,7 +17,7 @@ auto ST_init = [&]() -> void {
     };
     int t = Log2[n];
     for (int j = 1; j <= t; j++) {
-        for (int i = 1; i <= n - (1 << j) + 1) {
+        for (int i = 1; i <= n - (1 << j) + 1; i++) {
             f[i][j] = std::max(f[i][j - 1], f[i + (1 << (j - 1))][j - 1]);
         }
     }
