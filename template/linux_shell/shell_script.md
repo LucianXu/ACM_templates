@@ -8,10 +8,10 @@
 ```shell
 #!/bin/bash
 
-if [ ! -f "$1" ]; then
-    echo "File not found!"
-    exit 1
-fi
+# if [ ! -f "$1" ]; then
+#     echo "File not found!"
+#     exit 1
+# fi
 
 # The code above is to ensure the stability of the program
 
@@ -26,17 +26,17 @@ sed -i -e '${/^$/!G;}' "$1"
 ```shell
 #!/bin/bash
 
-if [ $# -ne 1 ]; then
-    echo "using: $0 <cpp file path>"
-    exit 1
-fi
+# if [ $# -ne 1 ]; then
+#     echo "using: $0 <cpp file path>"
+#     exit 1
+# fi
 
 cpp="$1"
 
-if [ ! -f "$cpp" ]; then
-    echo "file $cpp not exists"
-    exit 1
-fi
+# if [ ! -f "$cpp" ]; then
+#     echo "file $cpp not exists"
+#     exit 1
+# fi
 
 # The code above is to ensure the stability of the program
 
@@ -58,7 +58,7 @@ echo "$hash"
 #!/bin/bash
 
 folder="${1}"
-current=$(pwd)
+# current=$(pwd)
 cd $folder
 
 g++ -o main main.cpp
@@ -77,15 +77,15 @@ for input in *.in; do
 
     # if you want to check by yourself, then you don't need the code below
 
-    $("$current"/formater.sh $output)
-    $("$current"/formater.sh $answer)
+    # $("$current"/formater.sh $output)
+    # $("$current"/formater.sh $answer)
 
-    if diff $output $answer > /dev/null; then
-        echo "${input%.*}: Accepted"
-    else
-        echo "${input%.*}: Wrong answer"
-	cat $output
-	cat $answer
-    fi
+    # if diff $output $answer > /dev/null; then
+    #     echo "${input%.*}: Accepted"
+    # else
+    #     echo "${input%.*}: Wrong answer"
+	# cat $output
+	# cat $answer
+    # fi
 done
 ```
