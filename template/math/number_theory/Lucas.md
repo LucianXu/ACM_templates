@@ -64,91 +64,55 @@ $$
 问题转换为求 $\frac{n!}{q^x} \bmod q^k$ 。可以利用威尔逊定理的推论。
 
 ```cpp
-// Problem: P4720 【模板】扩展卢卡斯定理/exLucas
-
-LL n, m, p;
-LL fac[N], inv_fac[N];
-
-LL quick_power(LL a, LL n, LL p){
+auto func = [&](auto&& self, LL n, LL pi, LL pk) {
+    if (!n) return 1ll;
     LL ans = 1;
-    while(n != 0){
-        if(n & 1) ans = (ans * a) % p;
-        a = (a * a) % p;
-        n >>= 1;
-    }
-    return ans;
-}
-
-void exgcd(LL a, LL b, LL &x, LL &y) {
-    LL x1 = 1, x2 = 0, x3 = 0, x4 = 1;
-    while(b != 0){
-        LL c = a / b;
-        tie(x1, x2, x3, x4, a, b) =
-            make_tuple(x3, x4, x1 - x3 * c, x2 - x4 * c, b, a - b * c);
-    }
-    x = x1, y = x2;
-}
-
-LL mul_inv(LL a, LL p){
-    LL x, y;
-    exgcd(a, p, x, y);
-    return (x % p + p) % p;
-}
-
-LL func(LL n, LL pi, LL pk){
-    if(!n) return 1;
-    LL ans = 1;
-    for(LL i = 2; i <= pk; i++){
-        if(i % pi) ans = ans * i % p;
+    for (LL i = 2; i <= pk; i++) {
+        if (i % pi) ans = ans * i % p;
     }
     ans = quick_power(ans, n / pk, pk);
-    for(LL i = 2; i <= n % pk; i++){
-        if(i % pi) ans = ans * i % pk;
+    for (LL i = 2; i <= n % pk; i++) {
+        if (i % pi) ans = ans * i % pk;
     }
-    return ans * func(n / pi, pi, pk) % pk;
-}
+    ans = ans * self(self, n / pi, pi, pk) % pk;
+    return ans;
+};
 
-LL multiLucas(LL n, LL m, LL pi, LL pk){
-    int cnt = 0;
-    for(LL i = n; i; i /= pi) cnt += i / pi;
-    for(LL i = m; i; i /= pi) cnt -= i / pi;
-    for(LL i = n - m; i; i /= pi) cnt -= i / pi;
-    return quick_power(pi, cnt, pk) * func(n, pi, pk) % pk 
-           * mul_inv(func(m, pi, pk), pk) % pk * mul_inv(func(n - m, pi, pk), pk) % pk;
-}
+auto multiLucas = [&](LL n, LL m, LL pi, LL pk) {
+    LL cnt = 0;
+    for (LL i = n; i; i /= pi) cnt += i / pi;
+    for (LL i = m; i; i /= pi) cnt -= i / pi;
+    for (LL i = n - m; i; i /= pi) cnt -= i / pi;
+    LL ans = quick_power(pi, cnt, pk) * func(func, n, pi, pk) % pk;
+    ans = ans * inv(func(func, m, pi, pk), pk) % pk;
+    ans = ans * inv(func(func, n - m, pi, pk), pk) % pk;
+    return ans;
+};
 
-LL CRT(LL a[], LL m[], LL k){
+auto crt = [&](const vl& a, const vl& m, int k) {
     LL ans = 0;
-    for(int i = 1; i <= k; i++){
-        ans = (ans + a[i] * mul_inv(p / m[i], m[i]) * (p / m[i])) % p;
+    for (int i = 0; i < k; i++) {
+        ans = (ans + a[i] * inv(p / m[i], m[i]) * (p / m[i])) % p;
     }
     return (ans % p + p) % p;
-}
+};
 
-LL exLucas(LL n, LL m, LL p){
-    int cnt = 0;
-    LL prime[20], a[20];
-    for(LL i = 2; i * i <= p; i++){
-        if(p % i == 0){
-            prime[++cnt] = 1;
-            while(p % i == 0) prime[cnt] = prime[cnt] * i, p /= i;
-            a[cnt] = multiLucas(n, m, i, prime[cnt]);
+auto exLucas = [&](LL n, LL m, LL p) {
+    vl a, prime;
+    for (int i = 2; i * i <= p; i++) {
+        if (p % i) continue;
+        prime.push_back(1);
+        while (p % i == 0) {
+            prime.back() *= i;
+            p /= i;
         }
+        a.push_back(multiLucas(n, m, i, prime.back()));
     }
-    if(p > 1) prime[++cnt] = p, a[cnt] = multiLucas(n, m, p, p);
-    return CRT(a, prime, cnt);
-}
-
-int main(){
-    
-    ios::sync_with_stdio(false);
-    cin.tie(0);
-    cout.tie(0);
-    
-    cin >> n >> m >> p;
-    cout << exLucas(n, m, p) << endl;
-    
-    return 0;
-}
+    if (p > 1) {
+        prime.push_back(p);
+        a.push_back(multiLucas(n, m, p, p));
+    }
+    return crt(a, prime, a.size());
+};
 ```
 

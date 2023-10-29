@@ -5,11 +5,11 @@
 vi prime, is_prime(n + 1, 1);
 auto Euler_sieve = [&](int n){
     for (int i = 2; i <= n; i++) {
-        if(is_prime[i]) prime.push_back(i);
-        for(auto p : prime){
-            if(i * p > n) break;
+        if (is_prime[i]) prime.push_back(i);
+        for (auto p : prime) {
+            if (i * p > n) break;
             is_prime[i * p] = 0;
-            if(i % p == 0) break;
+            if (i % p == 0) break;
         }
     }
 };

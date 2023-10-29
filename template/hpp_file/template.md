@@ -15,15 +15,15 @@
 #define temps template <types>
 #define tandu template <typet, typeu>
 
-using UI = unsigned int;
-using ULL = unsigned long long;
+# using UI = unsigned int;
+# using ULL = unsigned long long;
 using LL = long long;
-using ULL = unsigned long long;
+# using ULL = unsigned long long;
 using i128 = __int128;
 using PII = std::pair<int, int>;
-using PIL = std::pair<int, LL>;
-using PLI = std::pair<LL, int>;
-using PLL = std::pair<LL, LL>;
+# using PIL = std::pair<int, LL>;
+# using PLI = std::pair<LL, int>;
+# using PLL = std::pair<LL, LL>;
 using vi = std::vector<int>;
 using vvi = std::vector<vi>;
 using vl = std::vector<LL>;
@@ -51,6 +51,7 @@ constexpr double pi = 3.141592653589793;
 constexpr double eps = 1e-6;
 
 constexpr int lowbit(int x) { return x & -x; }
+/*
 constexpr int add(int x, int y) { return x + y < mod ? x + y : x - mod + y; }
 constexpr int sub(int x, int y) { return x < y ? mod + x - y : x - y; }
 constexpr int mul(LL x, int y) { return x * y % mod; }
@@ -74,9 +75,14 @@ temps constexpr int mul(Ts... x) {
     (..., Mul(y, x));
     return y;
 }
+*/
 
 tandu bool Max(T& x, const U& y) { return x < y ? x = y, true : false; }
 tandu bool Min(T& x, const U& y) { return x > y ? x = y, true : false; }
+
+void solve() {
+    
+}
 
 int main() {
     std::ios::sync_with_stdio(false);
@@ -86,7 +92,7 @@ int main() {
     int t = 1;
     std::cin >> t;
     while (t--) {
-
+        solve();
     }
     return 0;
 }

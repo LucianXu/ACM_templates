@@ -16,7 +16,6 @@ auto get_next = [&](const std::string& s) -> vi {
     }
     return next;
 };
-
 ```
 
 ## 应用

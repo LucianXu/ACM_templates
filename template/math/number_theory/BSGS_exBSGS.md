@@ -7,14 +7,11 @@
 auto BSGS = [&](LL a, LL b, LL p) {
     if (1 % p == b % p) return 0ll;
     LL k = std::sqrt(p) + 1;
-    debug(k);
-    std::unordered_map<LL, LL> hash;
-    debug(k);
+    std::unordered_map<LL, LL> hash
     for (LL i = 0, j = b % p; i < k; i++) {
         hash[j] = i;
         j = j * a % p;
     }
-    debug("!");
     LL ak = 1;
     for (int i = 1; i <= k; i++) ak = ak * a % p;
     for (int i = 1, j = ak; i <= k; i++) {

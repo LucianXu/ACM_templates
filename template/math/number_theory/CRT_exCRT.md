@@ -4,7 +4,7 @@
 $$
 \left\{\begin{array}{ll}N \equiv a_{1} \bmod m_{1} \\ N \equiv a_{2} \bmod m_{2} \\  \cdots \\ N \equiv a_{n} \bmod m_{n}\end{array}\right.
 $$
-有 $N \equiv \sum\limits_{i=1}^{k} a_{i} \times \operatorname{inv}\left(\frac{M}{m_{i}}, m_{i}\right) \times\left(\frac{M}{m_{i}}\right)\bmod M$​
+有 $N \equiv \sum\limits_{i=1}^{k} a_{i} \times \operatorname{inv}\left(\frac{M}{m_{i}}, m_{i}\right) \times\left(\frac{M}{m_{i}}\right)\bmod M$
 
 ```c++
 auto crt = [&](int n, const vi& a, const vi& m) -> LL{

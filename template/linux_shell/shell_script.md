@@ -8,11 +8,12 @@
 ```shell
 #!/bin/bash
 
-# if [ ! -f "$1" ]; then
-#     echo "File not found!"
-#     exit 1
-# fi
-
+if false; then
+    if [ ! -f "$1" ]; then
+        echo "File not found!"
+        exit 1
+    fi
+fi
 # The code above is to ensure the stability of the program
 
 sed -i 's/[[:space:]]*$//' "$1"
@@ -26,27 +27,7 @@ sed -i -e '${/^$/!G;}' "$1"
 ```shell
 #!/bin/bash
 
-# if [ $# -ne 1 ]; then
-#     echo "using: $0 <cpp file path>"
-#     exit 1
-# fi
-
-cpp="$1"
-
-# if [ ! -f "$cpp" ]; then
-#     echo "file $cpp not exists"
-#     exit 1
-# fi
-
-# The code above is to ensure the stability of the program
-
-temp="${cpp}.temp"
-tr -d '[:space:]' < "$cpp" > "$temp"
-
-hash=$(md5sum "$temp" | awk '{print $1}')
-
-rm "$temp"
-
+hash=$(md5sum <(tr -d '[:space:]' < "$1") | awk '{print $1}')
 echo "$hash"
 ```
 
@@ -57,11 +38,10 @@ echo "$hash"
 ```shell
 #!/bin/bash
 
-folder="${1}"
 # current=$(pwd)
-cd $folder
+cd "$1"
 
-g++ -o main main.cpp
+g++ -o main -O2 -std=c++17 -DLOCAL main.cpp
 
 for input in *.in; do
     output=${input%.*}.out
@@ -76,16 +56,17 @@ for input in *.in; do
     cat $answer
 
     # if you want to check by yourself, then you don't need the code below
+    if false; then
+        $("$current"/formater.sh $output)
+        $("$current"/formater.sh $answer)
 
-    # $("$current"/formater.sh $output)
-    # $("$current"/formater.sh $answer)
-
-    # if diff $output $answer > /dev/null; then
-    #     echo "${input%.*}: Accepted"
-    # else
-    #     echo "${input%.*}: Wrong answer"
-	# cat $output
-	# cat $answer
-    # fi
+        if diff $output $answer > /dev/null; then
+            echo "${input%.*}: Accepted"
+        else
+            echo "${input%.*}: Wrong answer"
+    	cat $output
+    	cat $answer
+        fi
+    fi
 done
 ```

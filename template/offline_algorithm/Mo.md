@@ -11,9 +11,9 @@ std::sort(all(q), [&](node a, node b) {
 
 auto move = [&](int x, int op) -> void {
     if (op == 1) {
-        ...
+        /* operations */
     } else {
-        ...
+        /* operations */
     }
 };
 
