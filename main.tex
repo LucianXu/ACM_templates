@@ -384,8 +384,216 @@ for (int i = 1; i <= n; i++) {
 \end{lstlisting}
 
 \subsection{ segment tree }
+\begin{lstlisting}[style=cpp]
+/* segment tree @ czr */
+const int N = 100010;
+struct node {
+    int l, r;
+    ll sum, maxn, add, set;
+    bool addflag, setflag;
+}tr[N << 2];
 
-TODO
+void push_up(int u) {
+    tr[u].sum = tr[u << 1].sum + tr[u << 1 | 1].sum;
+    tr[u].maxn = max(tr[u << 1].maxn, tr[u << 1 | 1].maxn);
+}
+// 0 4 0 0 0
+// 2 6 2 2 2
+// 2 6 2 4 4
+
+void push_down(int u) {
+    auto& root = tr[u], &left = tr[u << 1], &right = tr[u << 1 | 1];
+    if (root.setflag) {
+        assert(!root.addflag);
+        left.add = 0, left.set = root.set, left.addflag = false, left.setflag = true;
+        right.add = 0, right.set = root.set, right.addflag = false, right.setflag = true;
+        left.sum = root.set * (left.r - left.l + 1);
+        right.sum = root.set * (right.r - right.l + 1);
+        left.maxn = root.set;
+        right.maxn = root.set;
+        root.set = 0, root.setflag = false;
+    }
+    if (root.addflag) {
+        assert(!root.setflag);
+        if (left.setflag) left.set += root.add;
+        else left.add += root.add, left.addflag = true;
+        if (right.setflag) right.set += root.add;
+        else right.add += root.add, right.addflag = true;
+        
+        left.sum += root.add * (left.r - left.l + 1);
+        right.sum += root.add * (right.r - right.l + 1);
+        left.maxn += root.add;
+        right.maxn += root.add;
+        root.add = 0, root.addflag = false;
+    }
+    assert(root.add == 0);
+}
+
+void build(int u, int l, int r, vector<ll>& a) {
+    if (l == r) {
+        tr[u].l = tr[u].r = l, tr[u].sum = tr[u].maxn = a[l];
+        tr[u].add = 0, tr[u].set = 0;
+        tr[u].addflag = tr[u].setflag = false;
+    } else {
+        tr[u].l = l, tr[u].r = r, tr[u].add = 0, tr[u].set = 0;
+        tr[u].addflag = tr[u].setflag = false;
+        int mid = l + r >> 1;
+        build(u << 1, l, mid, a);
+        build(u << 1 | 1, mid + 1, r, a);
+        push_up(u);
+    }
+}
+
+// 区间加
+void modify(int u, int l, int r, ll d) {
+    if (l > r) return;
+    if (tr[u].l >= l && tr[u].r <= r) {
+        if (tr[u].setflag) tr[u].set += d;
+        else tr[u].add += d, tr[u].addflag = true;
+        tr[u].sum += d * (tr[u].r - tr[u].l + 1);
+        tr[u].maxn += d;
+    } else {
+        push_down(u);
+        int mid = tr[u].l + tr[u].r >> 1;
+        if (l <= mid) modify(u << 1, l, r, d);
+        if (r > mid) modify(u << 1 | 1, l, r, d);
+        push_up(u); 
+    }
+}
+
+// 区间赋值
+void update(int u, int l, int r, ll x) {
+    if (l > r) return;
+    if (tr[u].l >= l && tr[u].r <= r) {
+        tr[u].set = x, tr[u].setflag = true;
+        tr[u].add = 0, tr[u].addflag = false;
+        tr[u].sum = x * (tr[u].r - tr[u].l + 1);
+        tr[u].maxn = x;
+    } else {
+        push_down(u);
+        int mid = tr[u].l + tr[u].r >> 1;
+        if (l <= mid) update(u << 1, l, r, x);
+        if (r > mid) update(u << 1 | 1, l, r, x);
+        push_up(u);
+    }
+}
+
+ll query_sum(int u, int l, int r) {
+    if (l > r) return 0;
+    if (tr[u].l >= l && tr[u].r <= r) return tr[u].sum;
+    else {
+        ll res = 0;
+        push_down(u);
+        int mid = tr[u].l + tr[u].r >> 1;
+        if (l <= mid) res += query_sum(u << 1, l, r);
+        if (r > mid) res += query_sum(u << 1 | 1, l, r);
+        return res;
+    }
+}
+
+ll query_maxn(int u, int l, int r) {
+    if (l > r) return -1e18;
+    if (tr[u].l >= l && tr[u].r <= r) return tr[u].maxn;
+    else {
+        ll res = -1e18;
+        push_down(u);
+        int mid = tr[u].l + tr[u].r >> 1;
+        if (l <= mid) res = max(res, query_maxn(u << 1, l, r));
+        if (r > mid) res = max(res, query_maxn(u << 1 | 1, l, r));
+        return res;
+    }
+}
+
+// 找到最小 i 使得 sum(l，i) >= k
+ll find_presum_idx(int u, int l, int r, int x) {
+    if (tr[u].l == tr[u].r) return tr[u].l;
+    else {
+        push_down(u);
+        int mid = tr[u].l + tr[u].r >> 1;
+        if (r <= mid) {
+            return find_presum_idx(u << 1, l, r, x);
+        } else if (l > mid) {
+            return find_presum_idx(u << 1 | 1, l, r, x);
+        } else {
+            ll lsum = query_sum(u << 1, l, r);
+            if (lsum >= x) return find_presum_idx(u << 1, l, mid, x);
+            else return find_presum_idx(u << 1 | 1, mid + 1, r, x - lsum);
+        }
+    }
+}    
+\end{lstlisting}
+
+\subsection{ segment tree split }
+\begin{lstlisting}[style=cpp]
+/* segment tree split @ wrb */
+#include<bits/stdc++.h>
+using namespace std;
+namespace Acc{
+    using i64=int64_t;
+    enum{N=200009,M=10000000};
+    i64 v[M];
+    int lc[M],rc[M],tot,a[N],r[N];
+    auto up=[](int o){
+        v[o]=v[lc[o]]+v[rc[o]];
+    };
+    void bd(int&o,int l,int r){
+        if(o=++tot,l==r)return cin>>v[o],void();
+        int md=l+r>>1;
+        bd(lc[o],l,md),bd(rc[o],md+1,r),up(o);
+    }
+    void spl(int&o,int&x,int l,int r,int L,int R){
+        if(l<=L&&R<=r)return o=x,x=0,void();
+        int md=L+R>>1;
+        o=++tot;
+        if(l<=md)spl(lc[o],lc[x],l,r,L,md);
+        if(r>md)spl(rc[o],rc[x],l,r,md+1,R);
+        up(o),up(x);
+    }
+    void mg(int&o,int x,int l,int r){
+        if(!o||!x)return o|=x,void();
+        if(l==r)return v[o]+=v[x],void();
+        int md=l+r>>1;
+        mg(lc[o],lc[x],l,md);
+        mg(rc[o],rc[x],md+1,r);
+        up(o);
+    }
+    void ins(int&o,int l,int r,int x,int k){
+        if(!o)o=++tot;
+        if(v[o]+=k,l==r)return;
+        int md=l+r>>1;
+        x<=md?ins(lc[o],l,md,x,k):ins(rc[o],md+1,r,x,k);
+    }
+    i64 qry(int o,int l,int r,int L,int R){
+        if(!o)return 0;
+        if(l<=L&&R<=r)return v[o];
+        int md=L+R>>1;i64 z=0;
+        if(l<=md)z=qry(lc[o],l,r,L,md);
+        if(r>md)z+=qry(rc[o],l,r,md+1,R);
+        return z;
+    }
+    int kth(int o,int l,int r,int k){
+        if(l==r)return l;
+        if(k>v[o])return -1;
+        int md=l+r>>1;
+        if(k<=v[lc[o]])return kth(lc[o],l,md,k);
+        else return kth(rc[o],md+1,r,k-v[lc[o]]);
+    }
+    auto work=[](){
+        int n,m,i,x,y,o=1;
+        for(cin>>n>>m,bd(r[1],1,n);m--;)switch(cin>>i,i){
+            case 0:cin>>i>>x>>y,spl(r[++o],r[i],x,y,1,n);break;
+            case 1:cin>>x>>y,mg(r[x],r[y],1,n);break;
+            case 2:cin>>i>>x>>y,ins(r[i],1,n,y,x);break;
+            case 3:cin>>i>>x>>y,cout<<qry(r[i],x,y,1,n)<<'\n';break;
+            case 4:cin>>i>>x,cout<<kth(r[i],1,n,x)<<'\n';break;
+        }
+    };
+}
+int main(){
+    ios::sync_with_stdio(0);
+    cin.tie(0),Acc::work();
+}
+\end{lstlisting}
 
 \subsection{ persistent segment tree }
 
@@ -565,6 +773,113 @@ int main() {
 
     return 0;
 }
+\end{lstlisting}
+
+\subsection { sweep line }
+\begin{lstlisting}[style=cpp]
+/* sweep line @ czr */
+struct Node {
+    int l, r;
+    ll sum, length, res;
+}tr[N << 2];
+ 
+void push_up(int u) {
+    tr[u].res = (tr[u << 1].res + tr[u << 1 | 1].res) % Mod;
+}
+ 
+void update_length(int u) {
+    if (tr[u].sum) {
+        tr[u].length = tr[u].res;
+    } else {
+        if (tr[u].l == tr[u].r) tr[u].length = 0;
+        else tr[u].length = (tr[u << 1].length + tr[u << 1 | 1].length) % Mod;
+    }
+}
+ 
+void build(int u, int l, int r) {
+    if (l == r) tr[u] = {l, r, 0, 0, 0};
+    else {
+        tr[u] = {l, r, 0, 0, 0};
+        int mid = l + r >> 1;
+        build(u << 1, l, mid);
+        build(u << 1 | 1, mid + 1, r);
+        push_up(u);
+    }
+}
+ 
+void modify(int u, int l, int r, int op) {
+    if (tr[u].l >= l && tr[u].r <= r) {
+        tr[u].sum += op;
+        update_length(u);
+    } else {
+        int mid = tr[u].l + tr[u].r >> 1;
+        if (l <= mid) modify(u << 1, l, r, op);
+        if (r > mid) modify(u << 1 | 1, l, r, op);
+        push_up(u);
+        update_length(u);
+    }
+}
+ 
+void change(int u, int x, ll d) {
+    if (tr[u].l == tr[u].r) {
+        tr[u].res = (tr[u].res + d) % Mod;
+        update_length(u);
+    } else {
+        int mid = tr[u].l + tr[u].r >> 1;
+        if (x <= mid) change(u << 1, x, d);
+        else change(u << 1 | 1, x, d);
+        push_up(u);
+        update_length(u);
+    }
+}
+\end{lstlisting}
+
+\begin{lstlisting}[style=cpp]
+/* sweep line @ wrb */
+#define int long long
+const int N = 2e5+10;
+int b[N<<1],n,len,ans;
+struct node{
+    int y1,y2,x,k;
+}a[N<<1];
+struct Seg{
+#define lc (o<<1)
+#define rc (o<<1|1)
+    static const int N = 5e6+10;
+    int sum[N],cnt[N],tag[N];
+    void push_up(int o,int l,int r){
+        if(sum[o])cnt[o]=b[r+1]-b[l];
+        else cnt[o]=cnt[lc]+cnt[rc];
+    }
+    void add(int o,int l,int r,int L,int R,int k){
+        if(r<L || l>R)return;
+        if(l==L && r==R)return (void)(sum[o]+=k,push_up(o,l,r));
+        int mid=L+R>>1;
+        if(r<=mid)add(lc,l,r,L,mid,k);
+        else if(l>mid)add(rc,l,r,mid+1,R,k);
+        else add(lc,l,mid,L,mid,k),add(rc,mid+1,r,mid+1,R,k);
+        push_up(o,L,R);
+    }
+#undef lc
+#undef rc
+}t;
+void work(){
+    cin>>n;
+    for(int i=1,x1,y1,x2,y2;i<=n;i++){
+        cin>>x1>>y1>>x2>>y2;
+        b[i*2-1]=y1,b[i*2]=y2,a[i*2-1]={y1,y2,x1,1},a[i*2]={y1,y2,x2,-1};
+    }
+    n<<=1;
+    sort(b+1,b+n+1),len=unique(b+1,b+n+1)-b-1;
+    for(int i=1;i<=n;i++)a[i].y1=lower_bound(b+1,b+len+1,a[i].y1)-b,a[i].y2=lower_bound(b+1,b+len+1,a[i].y2)-b;
+    sort(a+1,a+n+1,[](node a,node b)->bool{return a.x<b.x;});
+    for(int i=1;i<n;i++){
+        t.add(1,a[i].y1,a[i].y2-1,1,len-1,a[i].k);
+        ans+=t.cnt[1]*(a[i+1].x-a[i].x);
+    }
+    cout<<ans;
+}
+#undef int
 \end{lstlisting}
 
 \subsection{ treap }
@@ -1116,6 +1431,121 @@ int main() {
 }
 \end{lstlisting}
 
+\subsection{ link cut tree }
+\begin{lstlisting}[style=cpp]
+/* link cut tree @ wrb */
+struct LCT{
+    int v[N],r[N],f[N],s[N][2],st[N],tp;
+    void pu(int x){v[x]=a[x]^v[s[x][0]]^v[s[x][1]];}
+    void flp(int x){r[x]^=1,std::swap(s[x][0],s[x][1]);}
+    void pd(int x){if(r[x])flp(s[x][0]),flp(s[x][1]),r[x]=0;}
+    bool isrt(int x){return s[f[x]][0]!=x&&s[f[x]][1]!=x;}
+    void rtt(int x){
+        int y=f[x],z=f[y],k=(s[y][1]==x);if(!isrt(y)) s[z][y==s[z][1]]=x;
+        f[x]=z,f[y]=x,f[s[x][k^1]]=y,s[y][k]=s[x][k^1],s[x][k^1]=y,pu(y),pu(x);}
+    void spl(int x){
+        st[tp++]=x;for(int i=x;!isrt(i);i=f[i])st[tp++]=f[i];
+        while(tp)pd(st[--tp]);
+        while(!isrt(x)){
+            if(!isrt(f[x]))rtt((s[f[x]][0]==x)^(s[f[f[x]]][0]==f[x])?x:f[x]);
+            rtt(x);
+        }pu(x);
+    }
+    void acc(int x){for(int y=0;x;y=x,x=f[x]) spl(x),s[x][1]=y,pu(x);}
+    void mkrt(int x){acc(x),spl(x),flp(x);}
+    int fdrt(int x){acc(x),spl(x);while(s[x][0])x=s[x][0];spl(x);return x;}
+    void cut(int x,int y){mkrt(x);if(x==fdrt(y)&&f[y]==x&&!s[y][0])s[x][1]=f[y]=0,pu(x);}
+    void lk(int x,int y){mkrt(x);if(x!=fdrt(y))f[x]=y;}
+}t;
+\end{lstlisting}
+
+\subsection{ Lichao tree }
+\begin{lstlisting}[style=cpp]
+/* Lichao tree @ wrb */
+#include<bits/stdc++.h>
+using namespace std;
+namespace Acc{
+#define lc (o<<1)
+#define rc (o<<1|1)
+    const int N = 4e5+10;
+    int v[N],n,l,r,z;
+    double k[N],b[N];
+    inline void r1(int&x){x=(x+z-1)%39989+1;}
+    inline void r2(int&x){x=(x+z-1)%1000000000+1;}
+    double f(int o,int x){
+        return k[o]*x+b[o];
+    }
+    int beat(int x,int a,int b){
+        double u=f(a,x),v=f(b,x);
+        return fabs(u-v)<=1e-8?a<b:u>v;
+    }
+    void add(int o,int L,int R,int x){
+        int md=L+R>>1;
+        if(l<=L&&R<=r){
+            if(!v[o])return (void)(v[o]=x);
+            if(beat(L,v[o],x) && beat(R,v[o],x))return;
+            if(beat(L,x,v[o]) && beat(R,x,v[o]))return (void)(v[o]=x);
+            if(beat(md,x,v[o]))swap(x,v[o]);
+            if(beat(L,x,v[o]))add(lc,L,md,x);
+            else add(rc,md+1,R,x);
+            return;
+        }
+        if(r>md)add(rc,md+1,R,x);
+        if(l<=md)add(lc,L,md,x);
+    }
+    int ask(int o,int L,int R){
+        if(L==R)return v[o];
+        int md=L+R>>1,h=l<=md?ask(lc,L,md):ask(rc,md+1,R);
+        return beat(l,h,v[o])?h:v[o];
+    }
+    void work(){
+        cin>>n;
+        for(int op,y1,y2,c=0;n--;){
+            cin>>op;
+            if(op){
+                cin>>l>>y1>>r>>y2,++c,r1(l),r2(y1),r1(r),r2(y2);
+                if(l==r)k[c]=0,b[c]=max(y1,y2);
+                else {
+                    if(l>r)swap(l,r),swap(y1,y2);
+                    k[c]=(y2-y1+0.)/(r-l),b[c]=y1-k[c]*l;
+                }
+                add(1,1,4e4+10,c);
+            }else cin>>l,r1(l),cout<<(z=ask(1,1,4e4+10))<<'\n';
+        }
+    }
+}
+int main(){
+    return Acc::work(),0;
+}
+\end{lstlisting}
+
+\subsection{ ODT }
+\begin{lstlisting}[style=cpp]
+/* ODT @ wrb */
+struct T{
+    int l,r,v;
+    T(int a,int b=-1,int c=-1):l(a),r(b),v(c){}
+    bool operator<(const T&_)const{return l<_.l;}
+};
+set<T>s;
+auto spl(int p){
+    auto it=s.lower_bound(p);
+    if(it!=end(s) && it->l==p)return it;
+    --it;
+    int l=it->l,r=it->r,v=it->v;
+    s.erase(it),s.insert(T(l,p-1,v));
+    return s.insert(T(p,r,v)).first;
+}
+void asgn(int l,int r,int v){
+    auto ed=spl(r+1),bg=spl(l);
+    s.erase(bg,ed);
+    auto i=s.insert(T(l,r,v)).first,j=prev(i);
+    if(i!=begin(s)&&j->v==v)l=j->l,s.erase(j);
+    if((j=next(i))!=end(s)&&j->v==v)r=j->r,s.erase(j);
+    s.erase(i),s.insert(T(l,r,v));
+}
+\end{lstlisting}
+
 \section{ string }
 \subsection{ kmp }
 \begin{lstlisting}[style=cpp]
@@ -1156,10 +1586,23 @@ auto exkmp = [&](const std::string& s) -> vi {
 \end{lstlisting}
 
 \subsection{ manacher }
+\begin{lstlisting}[style=cpp]
+/* manacher @ wrb */
+auto Manacher = [&](const std::string& t) {
+    std::string s = "#";
+    for (char c : t) s += c, s += '#';
+    int i, o = 0, r = 0, n = s.size();
+    std::vector<int> p(n, 1), q(n);
+    for (i = 0; i < n; ++i) {
+        if (i <= r) p[i] = std::min(r - i + 1, p[2 * o - i]);
+        for (; p[i] <= i && s[i + p[i]] == s[i - p[i]]; ++p[i]);
+        if (i + p[i] - 1 > r) r = i + p[i] - 1, o = i;
+    }
+    return p;
+};
+\end{lstlisting}
 
-TODO
-
-\subsection*{ AC automaton }
+\subsection{ AC automaton }
 \begin{lstlisting}[style=cpp]
 /* AC auto */
 int cnt = 0;
@@ -1271,6 +1714,53 @@ for (int i = 0; i < n; i++) {
 }
 \end{lstlisting}
 
+\begin{lstlisting}[style=cpp]
+/* PAM @ wrb */
+template<const int M = 26>
+struct PAM {
+    struct T {
+        int len, d, fa, ch[M];
+        T() : len(), d(), fa(), ch() {}
+    };
+    int las;
+    string s;
+    vector<T> t;
+    vector<int> bl;
+    size_t count() const {
+        return t.size() - 2;
+    }
+    const T& operator[](const size_t& p) const {
+        return t[p];
+    }
+    const T& ask(const size_t& p) const {
+        return t[bl[p]];
+    }
+    int gf(int o, int p) {
+        while (p - t[o].len - 1 < 0 || s[p - t[o].len - 1] != s[p]) o = t[o].fa;
+        return o;
+    }
+    void append(int c) {
+        int p = s.size(), o;
+        s += c, o = gf(las, p);
+        if (t[o].ch[c] == 0) {
+            t.emplace_back();
+            t.back().len = t[o].len + 2;
+            t.back().fa = t[gf(t[o].fa, p)].ch[c];
+            t.back().d = t[t.back().fa].d + 1;
+            t[o].ch[c] = t.size() - 1;
+        }
+        bl.emplace_back(las = t[o].ch[c]);
+    }
+    PAM() : las(), s(), t(2) {
+        t[0].fa = t[1].fa = 1, t[1].len = -1;
+    }
+    PAM(const string& str, int h) : las(), s(), t(2) {
+        t[0].fa = t[1].fa = 1, t[1].len = -1;
+        for (char c : str) append(c - h);
+    }
+};
+\end{lstlisting}
+
 \subsection{ Suffix Array }
 \begin{lstlisting}[style=cpp]
 /* suffix array and ST table @ jiangly */
@@ -1338,6 +1828,62 @@ auto lcp = [&](int i, int j) {
     if (i > j) std::swap(i, j);
     return query(i + 1, j);
 };
+\end{lstlisting}
+
+\begin{lstlisting}[style=cpp]
+/* suffix array @ wrb */
+auto SA = [](std::string s) {
+    int n = s.size(), m = 128, i, j, l;
+    std::vector<int> ct(m), sa(n), rk(n), h(n), a(n);
+    for (i = 0; i < n; ++i) ++ct[rk[i] = s[i]];
+    for (i = 1; i < m; ++i) ct[i] += ct[i - 1];
+    for (i = n - 1; ~i; --i) sa[--ct[rk[i]]] = i;
+    for (l = 1; l < n; l *= 2) {
+        for (j = 0, i = n - 1; i >= n - l; --i) a[j++] = i;
+        for (i = 0; i < n; ++i) if (sa[i] >= l) a[j++] = sa[i] - l;
+        ct = std::vector<int>(m);
+        for (i = 0; i < n; ++i) ++ct[rk[a[i]]];
+        for (i = 1; i < m; ++i) ct[i] += ct[i - 1];
+        for (i = n - 1; ~i; --i) sa[--ct[rk[a[i]]]] = a[i];
+        std::swap(rk, a), rk[sa[0]] = 0;
+        for (i = 1; i < n; ++i) {
+            rk[sa[i]] = rk[sa[i - 1]] + (a[sa[i]] != a[sa[i - 1]] || a[(sa[i] + l) % n] != a[(sa[i - 1] + l) % n]);
+        }
+        if ((m = rk[sa[n - 1]] + 1) == n) break;
+    }
+    for (i = j = 0; i + 1 < n; h[rk[i++]] = j) {
+        for (j ? --j : 0; s[i + j] == s[sa[rk[i] - 1] + j]; ++j);
+    }
+    sa.erase(sa.begin());
+    rk.erase(rk.begin());
+    h.erase(h.begin());
+    return make_tuple(sa, rk, h);
+};
+//h[i] : LCP(rk[i], rk[i - 1])
+\end{lstlisting}
+
+\subsection{ Cantor expansion }
+\begin{lstlisting}[style=cpp]
+/* Cantor expresion @ wrb */
+std::cin >> n, fac[0] = 1;
+for (int i = 1; i <= n; ++i) {
+    std::cin >> a[i];
+    fac[i] = 1ll * fac[i - 1] * i % P;
+}
+auto ins = [&](int x) {
+    for (; x <= n; x += x & -x) ++t[x];
+};
+auto ask = [&](int x) {
+    int z = 0;
+    for (; x; x ^= x & -x) z += t[x];
+    return z;
+};
+int z = 0;
+for (int i = n; i; --i) {
+    z = (z + 1ll * fac[n - i] * ask(a[i])) % P;
+    ins(a[i]);
+}
+std::cout << ++z << '\n';
 \end{lstlisting}
 
 \subsection{ trie }
@@ -1902,6 +2448,99 @@ auto S_phi = [&](LL x) -> LL {
         ans += 1ll * (S_mu(j) - S_mu(i - 1)) * (x / i) * (x / i);
     }
     return (ans - 1) / 2 + 1;
+};
+\end{lstlisting}
+
+\subsection{ powerful number }
+目标: 求积性函数 \(f(n)\) 的前缀和. 做法如下:
+\begin{enumerate}
+    \item 构造积性函数 \(g(n)\), 满足其易求前缀和且素数处函数值等于 \(f\) 的函数值.
+    \item 构造 \(h = f / g\), 即 \(f = h * g\) (狄利克雷卷积), 容易知道 \(h(1) = 1\). 容易计算出 \(h\) 在非 powerful number 处函数值均为 \(0\).
+    \item 根据
+          \[
+              \begin{aligned}
+                  F(n) & = \sum_{i=1}^{n} f(n)                                                                                            \\
+                       & = \sum_{i=1}^{n} \sum_{d \mid i} g(i) h(i / d)                                                                   \\
+                       & = \sum_{d=1}^{n} \sum_{i=1}^{\left\lfloor\frac{n}{d}\right\rfloor} h(d) g(i)                                     \\
+                       & = \sum_{d=1}^{n} h(d) G\left(\left\lfloor\frac{n}{d}\right\rfloor\right)                                         \\
+                       & = \sum_{d=1, 2, \cdots, n, d \text{ is powerful number}} h(d) G\left(\left\lfloor\frac{n}{d}\right\rfloor\right) \\
+              \end{aligned}
+          \]
+          发现只需要计算 \(h\) 在 powerful number 处的函数值即可, 可以边搜索边计算.
+\end{enumerate}
+
+给定 \(f(p^k) = p^k (p^k - 1)\) 为积性函数, 计算其前缀和.
+\begin{lstlisting}[style=cpp]
+auto powerfulNumber = [&](LL n) {
+    /* 1. construct g, and compute G */
+    /* int m = sqrt(n);  // maybe TLE // */
+    int m = 2e6;
+    std::vector<Z> Gs(m + 1);
+    vi prime, is_prime(m + 1, 1);
+    Gs[1] = 1;
+    for (int i = 2; i <= m; i++) {
+        if (is_prime[i]) {
+            prime.push_back(i);
+            Gs[i] = i - 1;
+        }
+        for (auto p : prime) {
+            if (i * p > m) break;
+            is_prime[i * p] = 0;
+            if (i % p) {
+                Gs[i * p] = Gs[i] * Gs[p];
+            } else {
+                Gs[i * p] = Gs[i] * p;
+                break;
+            }
+        }
+    }
+    for (int i = 2; i <= m; i++) {
+        Gs[i] = Gs[i - 1] + Z(i) * Gs[i];
+    }
+    std::map<LL, Z> mp;
+    auto G = [&](auto&& self, LL n) {
+        if (n <= m) return Gs[n];
+        if (mp.find(n) != mp.end()) return mp[n];
+        Z ans = Z(n) * Z(n + 1) * Z(n * 2 + 1) * inv6;
+        for (LL l = 2, r, k; l <= n; l = r + 1) {
+            k = n / l, r = n / (n / l);
+            ans -= (Z(r) * Z(r + 1) - Z(l - 1) * Z(l)) * inv2 * self(self, k);
+        }
+        return mp[n] = ans;
+    };
+    /* 2. compute h(p^c) */
+    vvl ps(prime.size());
+    std::vector<std::vector<Z>> hs(prime.size());
+    int len = 0;
+    for (int i = 0; i < prime.size(); i++) {
+        LL p = prime[i], now = p * p, c = 2;
+        ps[i] = {1, p}, hs[i] = {1, 0};
+        while (now <= n) {
+            ps[i].push_back(now);
+            Z ans = Z(ps[i][c]) * (Z(ps[i][c]) - 1);
+            for (int j = 1; j <= c; j++) {
+                ans -= Z(ps[i][j]) * Z(ps[i][j - 1]) * Z(p - 1) * hs[i][c - j];
+            }
+            hs[i].push_back(ans);
+            now *= p, c += 1;
+        }
+        len += ps[i].size();
+    }
+    debug(len);
+    /* 3. search powerful number */
+    Z ans = 0;
+    auto dfs = [&](auto&& self, int id, LL now, Z hd) -> void {
+        ans += hd * G(G, n / now);
+        for (int i = id; i < prime.size(); i++) {
+            int p = prime[i], c = 2;
+            if (now > n / p / p) break;
+            for (LL x = now * p * p; x <= n; x *= p, c++) {
+                if (hs[i][c]) self(self, i + 1, x, hd * hs[i][c]);
+            }
+        }
+    };
+    dfs(dfs, 0, 1, 1);
+    return ans;
 };
 \end{lstlisting}
 
@@ -2590,12 +3229,8 @@ vi mtt(const vi& f, const vi& g) {
 \end{lstlisting}
 
 \subsection{ FWT }
-\subsubsection*{ and }
-\[
-    C_i = \sum\limits_{i = j \& k} A_j B_k
-\]
-
-分治过程
+各种分治过程:
+\textbf{and}:
 \[
     \operatorname{FWT[A]} = merge(\operatorname{FWT[A_0]} + \operatorname{FWT[A_1]}, \operatorname{FWT[A_1]}),
 \]
@@ -2603,9 +3238,26 @@ vi mtt(const vi& f, const vi& g) {
     \operatorname{UFWT[A']} = merge(\operatorname{UFWT[A'_0]} - \operatorname{UFWT[A'_1]}, \operatorname{UFWT[A'_1]}).
 \]
 
+\textbf{or}:
+\[
+    \operatorname{FWT[A]} = merge(\operatorname{FWT[A_0]}, \operatorname{FWT[A_0]} + \operatorname{FWT[A_1]}),
+\]
+\[
+    \operatorname{UFWT[A']} = merge(\operatorname{UFWT[A'_0]}, -\operatorname{UFWT[A'_0]} + \operatorname{UFWT[A'_1]}).
+\]
+
+\textbf{xor}:
+\[
+    \operatorname{FWT[A]} = merge(\operatorname{FWT[A_0]} + \operatorname{FWT[A_1]}, \operatorname{FWT[A_0]} - \operatorname{FWT[A_1]}),
+\]
+\[
+    \operatorname{UFWT[A']} = merge\left(\frac{\operatorname{UFWT[A'_0]} + \operatorname{UFWT[A'_1]}}{2}, \frac{\operatorname{UFWT[A'_0]} - \operatorname{UFWT[A'_1]}}{2}\right).
+\]
+
 \begin{lstlisting}[style=cpp]
-/* mod 998244353 */
-     int n = v.size();
+/* FWT */
+auto FWT_and = [&](vi v, int type) -> vi {
+    int n = v.size();
     for (int mid = 1; mid < n; mid <<= 1) {
         for (int block = mid << 1, j = 0; j < n; j += block) {
             for (int i = j; i < j + mid; i++) {
@@ -2620,23 +3272,7 @@ vi mtt(const vi& f, const vi& g) {
     }
     return v;
 };
-\end{lstlisting}
 
-\subsubsection*{ or }
-\[
-    C_i = \sum\limits_{i = j \mid k} A_j B_k
-\]
-
-分治过程
-\[
-    \operatorname{FWT[A]} = merge(\operatorname{FWT[A_0]}, \operatorname{FWT[A_0]} + \operatorname{FWT[A_1]}),
-\]
-\[
-    \operatorname{UFWT[A']} = merge(\operatorname{UFWT[A'_0]}, -\operatorname{UFWT[A'_0]} + \operatorname{UFWT[A'_1]}).
-\]
-
-\begin{lstlisting}[style=cpp]
-/* mod 998244353 */
 auto FWT_or = [&](vi v, int type) -> vi {
     int n = v.size();
     for (int mid = 1; mid < n; mid <<= 1) {
@@ -2653,23 +3289,7 @@ auto FWT_or = [&](vi v, int type) -> vi {
     }
     return v;
 };
-\end{lstlisting}
 
-\subsubsection*{ xor }
-\[
-    C_i = \sum\limits_{i = j \oplus k} A_j B_k
-\]
-
-分治过程
-\[
-    \operatorname{FWT[A]} = merge(\operatorname{FWT[A_0]} + \operatorname{FWT[A_1]}, \operatorname{FWT[A_0]} - \operatorname{FWT[A_1]}),
-\]
-\[
-    \operatorname{UFWT[A']} = merge\left(\frac{\operatorname{UFWT[A'_0]} + \operatorname{UFWT[A'_1]}}{2}, \frac{\operatorname{UFWT[A'_0]} - \operatorname{UFWT[A'_1]}}{2}\right).
-\]
-
-\begin{lstlisting}[style=cpp]
-/* mod 998244353 */
 auto FWT_xor = [&](vi v, int type) -> vi {
     int n = v.size();
     for (int mid = 1; mid < n; mid <<= 1) {
@@ -2687,16 +3307,60 @@ auto FWT_xor = [&](vi v, int type) -> vi {
     }
     return v;
 };
-\end{lstlisting}
 
-统一地，
-\begin{lstlisting}[style=cpp]
 a = FWT(a, 1),  b = FWT(b, 1);
 for (int i = 0; i < (1 << n); i++) {
     c[i] = mul(a[i], b[i]);
 }
 c = FWT(c, -1);
 \end{lstlisting}
+
+\begin{lstlisting}[style=cpp]
+/* FWT @ wrb */
+void FMTor(int f[]) {
+    for (int i = 0; i < n; ++i)
+        for (int j = 0; j < m; ++j)
+            if (j >> i & 1) f[j] = (f[j] + f[j ^ 1 << i]) % P;
+}
+void FMToriv(int f[]) {
+    for (int i = 0; i < n; ++i)
+        for (int j = 0; j < m; ++j)
+            if (j >> i & 1) f[j] = (f[j] - f[j ^ 1 << i] + P) % P;
+}
+void FMTand(int f[]) {
+    for (int i = 0; i < n; ++i) 
+        for (int j = 0; j < m; ++j) 
+            if (~j >> i & 1) f[j] = (f[j] + f[j ^ 1 << i]) % P;
+}
+void FMTandiv(int f[]) {
+    for (int i = 0; i < n; ++i)
+        for (int j = 0; j < m; ++j)
+            if (~j >> i & 1) f[j] = (f[j] - f[j ^ 1 << i] + P) % P;
+}
+void FWT(int f[]) {
+    for (int len = 1; len < m; len *= 2) {
+        for (int i = 0; i < m; i += len * 2) {
+            for (int j = i; j < i + len; ++j) {
+                int x = f[j], y = f[j + len];
+                f[j] = (x + y) % P;
+                f[j + len] = (x - y + P) % P;
+            }
+        }
+    }
+}
+void FWTiv(int f[]) {
+    for (int len = 1; len < m; len *= 2) {
+        for (int i = 0; i < m; i += len * 2) {
+            for (int j = i; j < i + len; ++j) {
+                int x = f[j], y = f[j + len];
+                f[j] = 1ll * (x + y) * iv2 % P;
+                f[j + len] = 1ll * (x - y + P) * iv2 % P;
+            }
+        }
+    }
+}
+\end{lstlisting}
+
 
 \subsection{ class polynomial }
 
@@ -3617,6 +4281,33 @@ auto det = [&](int n, vvi e) -> int {
 };
 \end{lstlisting}
 
+\subsubsection*{ determinant mod non-prime }
+\begin{lstlisting}[style=cpp]
+/* determinant @ wrb */
+int a[609][609];
+int main() {
+    int n, P, z = 1;
+    std::cin >> n >> P;
+    for (int i = 1; i <= n; ++i) {
+        for (int j = 1; j <= n; ++j) std::cin >> a[i][j];
+    }
+    for (int i = 1; i <= n; ++i) {
+        for (int j = i + 1; j <= n; ++j) {
+            while (a[j][i]) {
+                z = -z;
+                int d = a[i][i] / a[j][i];
+                for (int k = i; k <= n; ++k) {
+                    int x = (a[i][k] - 1ll * d * a[j][k]) % P;
+                    a[i][k] = a[j][k], a[j][k] = x;
+                }
+            }
+        }
+        z = 1ll * z * a[i][i] % P;
+    }
+    std::cout << (z + P) % P;
+}
+\end{lstlisting}
+
 \subsubsection*{ matrix multiplication }
 \(A_{n \times m}\) 与 \(B_{m \times k}\) 相乘并模 998244353.
 \begin{lstlisting}[style=cpp]
@@ -3668,7 +4359,158 @@ auto queryMax = [&]() {
 };
 \end{lstlisting}
 
+\begin{lstlisting}[style=cpp]
+/* linear basis @ wrb */
+template<typename T, const int M = sizeof(T) * 8>
+struct Liner_Basis {
+    T a[M];
+    size_t sz;
+    Liner_Basis() : a(), sz() {}
+    size_t size() const {
+        return sz;
+    }
+    void clear() {
+        memset(a, 0, sizeof a);
+    }
+    bool ins(T x) {
+        for (size_t i = M - 1; ~i && x; --i)
+            if (x >> i & 1) {
+                if (a[i]) x ^= a[i];
+                else return a[i] = x, true;
+            }
+        return false;
+    }
+    Liner_Basis& operator+=(const Liner_Basis&_) {
+        for (T x : _.a) if (x) this->ins(x);
+        return *this;
+    }
+    Liner_Basis operator+(const Liner_Basis&_) {
+        Liner_Basis z = *this;
+        return z += _;
+    }
+    T qry(T x = 0) {
+        for (size_t i = M - 1; ~i; --i)
+            if ((x ^ a[i]) > x) x ^= a[i];
+        return x;
+    }
+};
+template<typename T>
+using LB = Liner_Basis<T>;
+
+//////////////////////////////////////////////////////////////
+
+
+struct Liner_Basis {
+    using u64 = unsigned long long;
+    static const size_t M = 60;
+    u64 a[M + 1];
+    size_t sz;
+    size_t size() {
+    return sz;
+    }
+    Liner_Basis& operator+=(u64 x) {
+    for (size_t i = M; ~i && x; --i)
+    if (x >> i & 1)
+    if (a[i]) x ^= a[i];
+    else return a[i] = x, ++sz, *this;
+    return *this;
+    }
+    Liner_Basis& operator+=(const Liner_Basis&_) {
+    for (u64 x : _.a) if (x) *this += x;
+    return *this;
+    }
+    Liner_Basis operator+(u64 x) {
+    Liner_Basis z = *this;
+    return z += x;
+    }
+    Liner_Basis operator+(const Liner_Basis&_) {
+    Liner_Basis z = *this;
+    return z += _;
+    }
+    u64 qry(u64 x = 0) {
+    for (size_t i = M; ~i; --i)
+    if ((x ^ a[i]) > x) x ^= a[i];
+    return x;
+    }
+    u64 rank(u64 x) {
+    u64 h = 1, z = 0;
+    for (size_t i = 0; i <= M; ++i)
+    if (a[i]) {
+    if (x >> i & 1) z += h;
+    h <<= 1;
+    }
+    return z;
+    }
+    u64 kth(u64 x) {
+    u64 z = 0;
+    for (size_t i = M; ~i; --i)
+    if (x >> i & 1) z ^= a[i];
+    return z;
+    }
+}v;
+using LB = Liner_Basis;
+\end{lstlisting}
+
 \subsection{ linear programming }
+
+\subsection{ bm }
+\begin{lstlisting}[style=cpp]
+/* bm @ wrb */
+const int p = 998244353;
+auto power = [](int a, int b = p - 2) {
+    int z = 1;
+    while (b) {
+        if (b & 1) z = 1ll * z * a % p;
+        a = 1ll * a * a % p, b >>= 1;
+    }
+    return z;
+};
+vector<int> berlekamp_massey(const vector<int> &a) {
+  vector<int> v, last;  // v is the answer, 0-based, p is the module
+  int k = -1, delta = 0;
+
+  for (int i = 0; i < (int)a.size(); i++) {
+    int tmp = 0;
+    for (int j = 0; j < (int)v.size(); j++)
+      tmp = (tmp + (long long)a[i - j - 1] * v[j]) % p;
+
+    if (a[i] == tmp) continue;
+
+    if (k < 0) {
+      k = i;
+      delta = (a[i] - tmp + p) % p;
+      v = vector<int>(i + 1);
+
+      continue;
+    }
+
+    vector<int> u = v;
+    int val = (long long)(a[i] - tmp + p) * power(delta, p - 2) % p;
+
+    if (v.size() < last.size() + i - k) v.resize(last.size() + i - k);
+
+    (v[i - k - 1] += val) %= p;
+
+    for (int j = 0; j < (int)last.size(); j++) {
+      v[i - k + j] = (v[i - k + j] - (long long)val * last[j]) % p;
+      if (v[i - k + j] < 0) v[i - k + j] += p;
+    }
+
+    if ((int)u.size() - i < (int)last.size() - k) {
+      last = u;
+      k = i;
+      delta = a[i] - tmp;
+      if (delta < 0) delta += p;
+    }
+  }
+
+  for (auto &x : v) x = (p - x) % p;
+  v.insert(v.begin(), 1);
+
+  return v;
+  // $\forall i, \sum_{j = 0} ^ m a_{i - j} v_j = 0$
+}
+\end{lstlisting}
 
 \newpage
 \section{ complex number }
@@ -4159,6 +5001,157 @@ std::function<void(int, int)> tarjan = [&](int u, int id) {
 for (int i = 1; i <= n; i++) {
     if (!dfn[i]) {
         tarjan(i, 0);
+    }
+}
+\end{lstlisting}
+
+\subsubsection*{ 另一个版本 }
+\begin{lstlisting}[style=cpp]
+/* DCC @ wrb */
+// 割点
+std::vector<int> G[N];
+int dfn[N], low[N], is_cut[N], tm, rt;
+void tar(int u) {
+    int c = 0;
+    dfn[u] = low[u] = ++tm;
+    for (int v : G[u]) {
+        if (!dfn[v]) {
+            ++c, tar(v);
+            low[u] = std::min(low[u], low[v]);
+            if (low[v] == dfn[u]) is_cut[u] = 1;
+        } else low[u] = std::min(low[u], dfn[v]);
+    }
+    if (u == rt) is_cut[u] = c > 1;
+}
+int main() {
+    int n, m;
+    std::cin >> n >> m;
+    for (int x, y; m--; ) {
+        std::cin >> x >> y;
+        G[x].emplace_back(y);
+        G[y].emplace_back(x);
+    }
+    for (rt = 1; rt <= n; ++rt) {
+        if (!dfn[rt]) tar(rt);
+    }
+    std::vector<int> cut_v;
+    for (int i = 1; i <= n; ++i) {
+        if (is_cut[i]) cut_v.emplace_back(i);
+    }
+    std::cout << cut_v.size() << '\n';
+    for (int x : cut_v) std::cout << x << ' ';
+}
+
+
+// 桥
+std::vector<std::pair<int, int>> G[N], brg;
+int dfn[N], low[N], rt, tm;
+void tar(int u, int fa, int fr) {
+    dfn[u] = low[u] = ++tm;
+    for (auto[v, i] : G[u]) {
+        if (!dfn[v]) {
+            tar(v, u, i), low[u] = std::min(low[u], low[v]);
+        } else if (i != fr) {
+            low[u] = std::min(low[u], dfn[v]);
+        }
+    }
+    if (u != rt && dfn[u] == low[u]) {
+        brg.emplace_back(std::minmax(u, fa));
+    }
+}
+int main() {
+    int n, m;
+    std::cin >> n >> m;
+    for (int i = 1, x, y; i <= m; ++i) {
+        std::cin >> x >> y;
+        G[x].emplace_back(y, i);
+        G[y].emplace_back(x, i);
+    }
+    for (rt = 1; rt <= n; ++rt) {
+        if (!dfn[rt]) tar(rt, -1, -1);
+    }
+    std::sort(begin(brg), end(brg));
+    for (auto[u, v] : brg) {
+        std::cout << u << ' ' << v << '\n';
+    }
+}
+
+
+// 点双
+std::vector<int> G[N];
+std::vector<std::vector<int>> bcc;
+int dfn[N], low[N], tm, st[N], tp, rt;
+void tar(int u) {
+    dfn[u] = low[u] = ++tm, st[++tp] = u;
+    if (G[u].empty()) bcc.push_back({u});
+    for (int v : G[u]) {
+        if (!dfn[v]) {
+            tar(v), low[u] = std::min(low[u], low[v]);
+            if (low[v] == dfn[u]) {
+                bcc.push_back({u});
+                do {
+                    bcc.back().emplace_back(st[tp]);
+                } while(st[tp--] != v);
+            }
+        } else low[u] = std::min(low[u], dfn[v]);
+    }
+}
+int main() {
+    std::ios::sync_with_stdio(0);
+    std::cin.tie(0);
+    int n, m;
+    std::cin >> n >> m;
+    for (int x, y; m--; ) {
+        std::cin >> x >> y;
+        G[x].emplace_back(y);
+        G[y].emplace_back(x);
+    }
+    for (int i = 0; i < n; ++i) tar(i);
+    std::cout << bcc.size() << '\n';
+    for (auto v : bcc) {
+        std::cout << v.size() << ' ';
+        for (int x : v) std::cout << x << ' ';
+        std::cout << '\n';
+    }
+}
+
+
+// 边双
+std::vector<std::pair<int, int>> G[N];
+std::vector<std::vector<int>> becc;
+int dfn[N], low[N], tm, st[N], tp;
+void tar(int u, int fr) {
+    dfn[u] = low[u] = ++tm, st[++tp] = u;
+    for (auto[v, i] : G[u]) {
+        if (!dfn[v]) {
+            tar(v, i), low[u] = std::min(low[u], low[v]);
+        } else if (i != fr) {
+            low[u] = std::min(low[u], dfn[v]);
+        }
+    }
+    if (dfn[u] == low[u]) {
+        becc.emplace_back();
+        do {
+            becc.back().emplace_back(st[tp]);
+        } while (st[tp--] != u);
+    }
+}
+int main() {
+    int n, m;
+    std::cin >> n >> m;
+    for (int i = 1, x, y; i <= m; ++i) {
+        std::cin >> x >> y;
+        G[x].emplace_back(y, i);
+        G[y].emplace_back(x, i);
+    }
+    for (int i = 0; i < n; ++i) {
+        if (!dfn[i]) tar(i, -1);
+    }
+    std::cout << becc.size() << '\n';
+    for (auto& v : becc) {
+        std::cout << v.size() << ' ';
+        for (int x : v) std::cout << x << ' ';
+        std::cout << '\n';
     }
 }
 \end{lstlisting}
@@ -4816,6 +5809,83 @@ int main() {
 }
 \end{lstlisting}
 
+\subsection{ tree - matrix tree }
+\begin{lstlisting}[style=cpp]
+const int N=33,M=152599,P=998244353;
+int qpow(int a,int b=P-2){
+    int r=1;for(;b;b>>=1,a=1ll*a*a%P)if(b&1)r=1ll*r*a%P;return r;
+}
+struct T{int x,y,z;T(int a=0,int b=0,int c=0):x(a),y(b),z(c){}}e[N*N];
+struct F{
+    int a,b;
+    F():a(),b(){}
+    F(int x,int y):a(x),b(y){}
+    F operator+(const F&_)const{return F((a+_.a)%P,(b+_.b)%P);}
+    F operator+=(const F&_){return *this=*this+_;}
+    F operator-(const F&_)const{return F((a-_.a+P)%P,(b-_.b+P)%P);}
+    F operator-=(const F&_){return *this=*this-_;}
+    F operator*(const F&_)const{return F((1ll*a*_.b+1ll*b*_.a)%P,1ll*b*_.b%P);}
+    F operator*=(const F&_){return *this=*this*_;}
+    int operator&()const{return b?2:(a?1:0);}
+    bool operator!()const{return !a&&!b;}
+    F operator~()const{
+        int d=qpow(b);
+        return F((P-1ll*a*d%P*d%P)%P,d);
+    }
+};
+int fa[N],phi[M],n,m;
+int gf(int x){return x==fa[x]?x:fa[x]=gf(fa[x]);}
+int cal(int p){
+    F a[N][N],d,iv,z=F(0,1);
+    int i,j,k,l,x=0;iota(fa,fa+n+1,0);
+    for(i=1;i<=m;++i)if(e[i].z%p==0){
+        if((j=gf(e[i].x))!=(k=gf(e[i].y)))fa[j]=k;
+        j=e[i].x,k=e[i].y,l=e[i].z,++x;
+        a[j][k]-=F(l,1),a[k][j]-=F(l,1);
+        a[j][j]+=F(l,1),a[k][k]+=F(l,1);
+    }
+    for(j=0,i=1;i<=n;++i)if(fa[i]==i)++j;
+    if(j>1 || x<n-1)return 0;
+    for(i=1;i<n;++i){
+        for(k=i,j=i+1;j<n;++j)if(&a[j][i]>&a[k][i])k=j;
+        if(k!=i)swap(a[i],a[k]),z*=F(0,P-1);
+        if(!a[i][i])return 0;
+        for(z*=a[i][i],iv=~a[i][i],j=i;j<n;++j)a[i][j]*=iv;
+        for(j=i+1;j<n;++j)for(d=a[j][i],k=i;k<n;++k)a[j][k]-=a[i][k]*d;
+    }
+    return z.a;
+}
+void work(){
+    int h=0,i,j,x,y,z;
+    for(cin>>n>>m,i=1;i<=m;++i)cin>>x>>y>>z,e[i]=T(x,y,z),h=max(h,z);
+    iota(phi+1,phi+h+1,1);
+    for(i=1;i<=h;++i)for(j=i<<1;j<=h;j+=i)phi[j]=(phi[j]-phi[i]+P)%P;
+    for(z=0,i=1;i<=h;++i)z=(z+1ll*phi[i]*cal(i)%P)%P;
+    cout<<z<<'\n';
+}
+\end{lstlisting}
+
+\subsection{ Pref\"{u}r sequence }
+\begin{lstlisting}[style=cpp]
+\* prefur @ wrb *\
+for(int i=1;i<n;i++)cin>>fa[i],d[fa[i]]++;
+for(int i=1,j=1;i<n-1;i++,j++){
+    while(d[j])j++;
+    p[i]=fa[j];
+    while(i<n-1&&!--d[p[i]]&&j>p[i])p[i+1]=fa[p[i]],i++;
+}
+
+//////////////////////////////////////////////////////
+
+for(int i=1;i<n-1;i++)cin>>p[i],d[p[i]]++;
+p[n-1]=n;
+for(int i=1,j=1;i<n;i++,j++){
+    while(d[j])j++;
+    fa[j]=p[i];
+    while(i<n&&!--d[p[i]]&&j>p[i])fa[p[i]]=p[i+1],i++;
+}
+\end{lstlisting}
+
 \subsection{ network flow - maximal flow }
 \subsubsection*{ Dinic }
 \begin{lstlisting}[style=cpp]
@@ -5024,12 +6094,15 @@ struct HLPP {
 
 \subsubsection*{ Dinic + SPFA }
 \begin{lstlisting}[style=cpp]
+/* Dinic + SPFA */
 struct edge {
     int from, to;
     LL cap, cost;
 
     edge(int u, int v, LL c, LL w) : from(u), to(v), cap(c), cost(w) {}
 };
+
+const int N = 2000;
 
 struct MCMF {
     int n, m = 0, s, t;
@@ -5052,7 +6125,9 @@ struct MCMF {
     }
 
     bool spfa() {
-        rep(i, 1, n) { dist[i] = INF, cur[i] = 0; }
+        for (int i = 1; i <= n; i++) {
+            dist[i] = INF, cur[i] = 0;
+        }
         std::queue<int> q;
         q.push(s), dist[s] = 0, vis[s] = 1;
         while (!q.empty()) {
@@ -5100,7 +6175,7 @@ struct MCMF {
             LL tmp;
             while ((tmp = dfs(s, INF))) maxf += tmp;
         }
-        return std::makepair(maxf, minc);
+        return std::make_pair(maxf, minc);
     }
 } minc_maxf;
 \end{lstlisting}
@@ -5127,7 +6202,8 @@ struct MCMF {
     int n, m = 0, s, t;
     std::vector<edge> e;
     vi g[maxn];
-    int dis[maxn], vis[maxn], h[maxn];
+    int vis[maxn];
+    LL dis[maxn], h[maxn];
     node p[maxn * 2];
 
     void add(int from, int to, LL cap, LL cost) {
@@ -5138,21 +6214,22 @@ struct MCMF {
     }
 
     bool dijkstra() {
-        std::priority_queue<PII, std::vector<PII>, std::greater<PII>> q;
+        std::priority_queue<PIL, std::vector<PIL>, std::greater<PIL>> q;
         for (int i = 1; i <= n; i++) {
-            dis[i] = inf;
+            dis[i] = INF;
             vis[i] = 0;
         }
         dis[s] = 0;
         q.push({0, s});
         while (!q.empty()) {
-            int u = q.top().ss;
+            auto u = q.top().ss;
             q.pop();
             if (vis[u]) continue;
             vis[u] = 1;
             for (auto i : g[u]) {
                 edge ee = e[i];
-                int v = ee.to, nc = ee.cost + h[u] - h[v];
+                int v = ee.to;
+                LL nc = ee.cost + h[u] - h[v];
                 if (ee.cap and dis[v] > dis[u] + nc) {
                     dis[v] = dis[u] + nc;
                     p[v] = node(u, i);
@@ -5160,12 +6237,12 @@ struct MCMF {
                 }
             }
         }
-        return dis[t] != inf;
+        return dis[t] != INF;
     }
 
     void spfa() {
         std::queue<int> q;
-        for (int i = 1; i <= n; i++) h[i] = inf;
+        for (int i = 1; i <= n; i++) h[i] = INF;
         h[s] = 0, vis[s] = 1;
         q.push(s);
         while (!q.empty()) {
@@ -5228,8 +6305,8 @@ struct MCMF {
           对每个点进行拆点, 在 \(i\) 与 \(i^\prime\) 之间建立容量为 \(1\) 的有向边.
 \end{enumerate}
 
-\subsection{ network flow with upper / lower bound }
-\subsubsection{ 无源汇上下界可行流 }
+\subsection{ network flow - upper / lower bound }
+\subsubsection*{ 无源汇上下界可行流 }
 每条有向边有流量的上下界限制, 但整张图并未确定源点与汇点. 如果存在满足每个点的流入量等于流出量, 且每条边的流量满足其上下界限制的流, 称之为可行流.
 \begin{enumerate}
     \item 将每条边先给予大小为下界的流量,
@@ -5238,12 +6315,12 @@ struct MCMF {
     \item 跑从超级源点到超级汇点的最大流, 如果超级源点每条边都流满意味着存在可行流. 将每条边的流量加上预先给每条边设置的下界流量即为可行流方案.
 \end{enumerate}
 
-\subsubsection{ 有源汇上下界可行流 }
+\subsubsection*{ 有源汇上下界可行流 }
 \begin{enumerate}
     \item 建立汇点 $t$ 到源点 $s$ 的, 容量为 $\infty$ 的有向边, 将其转化为无源汇的问题.
 \end{enumerate}
 
-\subsubsection{ 有源汇上下界最大流 }
+\subsubsection*{ 有源汇上下界最大流 }
 \begin{enumerate}
     \item 建立汇点 $t$ 到源点 $s$ 的, 容量为 $\infty$ 的有向边, 将其转化为无源汇的问题,
     \item 跑上下界可行流, 可行流流量为边 $t \xrightarrow{\infty} s$ 的流量.
@@ -5251,7 +6328,7 @@ struct MCMF {
     \item 答案等于可行流流量 + 最大流流量.
 \end{enumerate}
 
-\subsubsection{ 有源汇上下界最小流 }
+\subsubsection*{ 有源汇上下界最小流 }
 \begin{enumerate}
     \item 建立汇点 $t$ 到源点 $s$ 的, 容量为 $\infty$ 的有向边, 将其转化为无源汇的问题,
     \item 跑上下界可行流, 可行流流量为边 $t \xrightarrow{\infty} s$ 的流量.
@@ -5259,12 +6336,222 @@ struct MCMF {
     \item 答案等于可行流流量 - 最大流流量.
 \end{enumerate}
 
-\subsubsection{ 有源汇上下界最小费用可行流 }
+\subsubsection*{ 有源汇上下界最小费用可行流 }
 \begin{enumerate}
     \item 按下界流满并计算费用,
     \item 类似有源汇上下界最大流建图, 跑超级源点到超级汇点的费用流,
     \item 答案等于按下界的费用加上后续残量网络.
 \end{enumerate}
+
+\subsection{ network flow - other versions }
+\begin{lstlisting}[style=cpp]
+/* dinic @ wrb */
+template<typename T, T inf = numeric_limits<T>::max()>
+struct Max_Flow {
+	vector<int> he, cur, d, ne, to;
+	vector<T> c;
+	int s, t;
+	Max_Flow(int m) : he(m, -1), s(-1), t(-1) {}
+	void add(int x, int y, T z = inf, T w = 0) {
+		// cerr << x << ' ' << y << ' ';
+		// if (z == inf) cerr << "inf\n";
+		// else cerr << z << '\n';
+		ne.emplace_back(he[x]);
+		he[x] = ne.size() - 1;
+		to.emplace_back(y);
+		c.emplace_back(z);
+		ne.emplace_back(he[y]);
+		he[y] = ne.size() - 1;
+		to.emplace_back(x);
+		c.emplace_back(w);
+	}
+	int bfs() {
+		queue<int> q;
+		d.assign(he.size(), -1);
+		q.emplace(s), d[s] = 0;
+		for (; q.size(); q.pop()) {
+			int u = q.front(), v;
+			for (int i = he[u]; ~i; i = ne[i]) {
+				if (c[i] && d[v = to[i]] == -1) {
+					d[v] = d[u] + 1;
+					if (v == t) return 1;
+					q.emplace(v);
+				}
+			}
+		}
+		return 0;
+	};
+	T dfs(int u, T fl) {
+		if (u == t) return fl;
+		T z = 0, r;
+		for (int& i = cur[u], v; ~i; i = ne[i]) {
+			if (c[i] && d[v = to[i]] == d[u] + 1) {
+				r = dfs(v, min(fl, c[i]));
+				if (r == 0) d[v] = -1;
+				else {
+					fl -= r, z += r, c[i] -= r, c[i ^ 1] += r;
+					if (fl == 0) return z;
+				}
+			}
+		}
+		return z;
+	}
+	T dinic(int _s, int _t) {
+		T z = 0;
+		for (s = _s, t = _t; bfs();) {
+			cur = he, z += dfs(s, inf);
+		}
+		return z;
+	};
+};
+\end{lstlisting}
+
+\begin{lstlisting}[style=cpp]
+/* bounded flow @ lys */
+#include <iostream>
+#include <cstdio>
+#include <algorithm>
+#include <queue>
+#include <vector>
+#define int long long
+using namespace std;
+
+const int maxn = 50020;
+const int inf = 1e18;
+
+struct Dinic_limit
+{
+    int st, sgn; // st = 1 表示有源汇; sgn 表示最大(1)最小(-1)流
+    struct edge
+    {
+        int x, y, cap, flow, cost;
+    };
+    int deg[maxn]; // rd - cd
+    vector<int> e[maxn];
+    vector<edge> edges;
+    int mx;
+    int mcmf;
+    void add(int x, int y, int cap, int cost)
+    {
+        edges.push_back({x, y, cap, 0, cost});
+        edges.push_back({y, x, 0, 0, -cost});
+        mx = max({mx, x, y});
+        int m = edges.size();
+        e[x].push_back(m - 2), e[y].push_back(m - 1);
+    }
+    void add(int x, int y, int l, int r, int cost)
+    {
+        if (cost >= 0)
+            add(x, y, r - l, cost), deg[y] += l, deg[x] -= l, mcmf += l * cost;
+        else
+            add(y, x, r - l, -cost), deg[y] += r, deg[x] -= r, mcmf += r * cost;
+    }
+    int s, t;
+    int vis[maxn], dis[maxn];
+    bool spfa()
+    {
+        queue<int> q;
+        fill(vis, vis + mx + 1, 0), fill(dis, dis + mx + 1, inf);
+        dis[s] = 0, q.push(s), vis[s] = 1;
+        while (!q.empty())
+        {
+            int x = q.front();
+            q.pop(), vis[x] = 0;
+            for (int i : e[x])
+            {
+                auto k = edges[i];
+                if (k.cap - k.flow > 0 && k.cost + dis[x] < dis[k.y])
+                {
+                    dis[k.y] = dis[x] + k.cost;
+                    if (!vis[k.y])
+                        q.push(k.y), vis[k.y] = 1;
+                }
+            }
+        }
+        return dis[t] != inf;
+    }
+    int cur[maxn];
+    int dfs(int x, int lim)
+    {
+        if (x == t || lim == 0)
+            return lim;
+        vis[x] = 1;
+        int res = 0, f;
+        for (int &i = cur[x]; i < (int)e[x].size(); i++)
+        {
+            auto &k = edges[e[x][i]];
+            if (!vis[k.y] && k.cost + dis[x] == dis[k.y] && (f = dfs(k.y, min(lim, k.cap - k.flow))))
+                res += f, lim -= f, k.flow += f, edges[e[x][i] ^ 1].flow -= f, mcmf += f * k.cost;
+            if (lim == 0)
+                break;
+        }
+        vis[x] = 0;
+        return res;
+    }
+    int dinic(int s_, int t_)
+    {
+        int ss = mx + 1, tt = ss + 1;
+        int tot = 0;
+        for (int i = 1; i <= mx; i++)
+            if (deg[i] > 0)
+                add(ss, i, deg[i], 0), tot += deg[i];
+            else if (deg[i] < 0)
+                add(i, tt, -deg[i], 0);
+        if (st)
+            add(t_, s_, 0, inf, 0);
+        s = ss, t = tt;
+        int res = 0;
+        while (spfa())
+            fill(cur, cur + mx + 1, 0), res += dfs(s, inf);
+        // cerr << res << " " << tot << endl;
+        if (res != tot)
+            return -1;
+        if (st == 0)
+            return 1;
+        res = -edges.back().flow;
+        edges.back().cap = edges.back().flow = 0;
+        edges[edges.size() - 2].cap = edges[edges.size() - 2].flow = 0;
+        s = s_, t = t_;
+        if (sgn == -1)
+            swap(s, t);
+        while (spfa())
+            fill(cur, cur + mx + 1, 0), res += sgn * dfs(s, inf);
+        return res;
+    }
+    void clear()
+    {
+        for (int i = 0; i <= mx; i++)
+            e[i].clear(), deg[i] = 0;
+        edges.clear();
+        mx = 0, mcmf = 0;
+    }
+    Dinic_limit(int st_ = 1, int sgn_ = 1) { st = st_, sgn = sgn_; }
+    // st = 1 表示有源汇; sgn 表示最大(1)最小(-1)流
+    // 使用时调用 dinic 函数，返回-1表示无解，否则返回最大/最小流
+};
+
+Dinic_limit G(1, 1);
+
+signed main()
+{
+    ios::sync_with_stdio(false), cin.tie(0);
+    int n, m, S, T;
+    cin >> n >> m >> S >> T;
+    for (int i = 0; i < m; i++)
+    {
+        int s, t, l, r, c;
+        cin >> s >> t >> l >> r >> c;
+        G.add(s, t, l, r, c);
+    }
+    int res = G.dinic(S, T);
+    if (res == -1)
+        cout << -1 << endl;
+    else
+    {
+        cout << res << " " << G.mcmf << endl;
+    }
+}
+\end{lstlisting}
 
 \subsection{ matching - matching on bipartite graph }
 \subsubsection*{ 二分图最大匹配 }
@@ -5503,9 +6790,9 @@ auto andrew = [&](std::vector<point>& v) -> std::vector<point> {
 };
 \end{lstlisting}
 
-\subsection*{ half plane }
+\subsection{ half plane union }
 \begin{lstlisting}[style=cpp]
-/* half plane */
+/* half plane union */
 auto half_plane = [&](std::vector<line>& ln) -> std::vector<point> {
     std::sort(all(ln));
     ln.erase(
@@ -5539,6 +6826,46 @@ auto half_plane = [&](std::vector<line>& ln) -> std::vector<point> {
     }
     return ans;
 };
+\end{lstlisting}
+
+\subsection{ rotate }
+\begin{lstlisting}[style=cpp]
+/* rotate @ wrb */
+#include<cstdio>
+#include<algorithm>
+#define db double
+namespace Acc{
+    const int N = 5e4+10;
+    struct node{
+        int x,y;
+    }a[N],stk[N];
+    db cmp(node a,node b,node c){return 1.*(c.x-a.x)*(c.y-b.y)-1.*(c.x-b.x)*(c.y-a.y);}
+    int dis(node a,node b){return ((a.x-b.x)*(a.x-b.x)+(a.y-b.y)*(a.y-b.y));}
+    int n,tp,ans;
+    void work(){
+        scanf("%d",&n);
+        for(int i=1;i<=n;i++)scanf("%d%d",&a[i].x,&a[i].y);
+        std::sort(a+1,a+n+1,[=](node a,node b)->bool{return a.x<b.x || (a.x==b.x && a.y<b.y);});
+        stk[1]=a[1],tp=1;
+        for(int i=2;i<=n;i++){
+            while(tp>1 && cmp(stk[tp-1],stk[tp],a[i])<=0)tp--;
+            stk[++tp]=a[i];
+        }
+        int tmp=tp;
+        for(int i=n-1;i>=1;i--){
+            while(tp>tmp && cmp(stk[tp-1],stk[tp],a[i])<=0)tp--;
+            stk[++tp]=a[i];
+        }
+        for(int i=1,j=3;i<tp;i++){
+            while(cmp(stk[i],stk[i+1],stk[j])<cmp(stk[i],stk[i+1],stk[j+1]))j=j%(tp-1)+1;
+            ans=std::max(ans,std::max(dis(stk[i],stk[j]),dis(stk[i+1],stk[j])));
+        }
+        printf("%d",ans);
+    }
+}
+int main(){
+    return Acc::work(),0;
+}
 \end{lstlisting}
 
 \newpage
@@ -5579,6 +6906,89 @@ for (int k = 1, l = 1, r = 0; k <= m; k++) {
     while (r > Q.r) {
         move(r--, -1);
     }
+}
+\end{lstlisting}
+\subsection{ 回滚莫队 }
+\begin{lstlisting}[style=cpp]
+/* rollback Mo */
+#include<bits/stdc++.h>
+namespace Acc {
+    const int N = 200009;
+    int a[N], b[N], id[N], f[N], g[N], p[N], z[N];
+    std::pair<int, int> st[N];
+    struct T {
+        int l, r, o;
+    }q[N];
+    auto work = []() {
+        int n, m;
+        std::cin >> n;
+        for (int i = 1; i <= n; ++i) {
+            std::cin >> a[i], b[i] = a[i];
+        }
+        std::sort(b + 1, b + n + 1);
+        int ct = std::unique(b + 1, b + n + 1) - b - 1;
+        for (int i = 1; i <= n; ++i) {
+            a[i] = std::lower_bound(b + 1, b + ct + 1, a[i]) - b;
+        }
+        std::cin >> m;
+        for (int i = 1; i <= m; ++i) {
+            auto&[l, r, o] = q[i];
+            std::cin >> l >> r, o = i;
+        }
+        int B = ceil(n / sqrt(m));
+        for (int i = 1; i <= n; ++i) {
+            id[i] = (i - 1) / B + 1;
+        }
+        std::sort(q + 1, q + m + 1, [](T a, T b) {
+            return id[a.l] == id[b.l] ? a.r < b.r : a.l < b.l;
+        });
+        int ans = 0, L = 1, R = 0;
+        for (int i = 1; i <= m; ++i) {
+            auto[l, r, o] = q[i];
+            if (id[l] != id[q[i - 1].l]) {
+                ans = 0;
+                R = std::min(n, id[l] * B), L = R + 1;
+                memset(f + 1, 0, ct << 2);
+                memset(g + 1, 0, ct << 2);
+            }
+            if (id[l] == id[r]) {
+                for (int j = l; j <= r; ++j) {
+                    if (p[a[j]] == 0) p[a[j]] = j;
+                    else ans = std::max(ans, j - p[a[j]]);
+                }
+                for (int j = l; j <= r; ++j) p[a[j]] = 0;
+                z[o] = ans, ans = 0;
+            } else {
+                while (R < r) {
+                    ++R, g[a[R]] = R;
+                    if (f[a[R]] == 0) f[a[R]] = R;
+                    else ans = std::max(ans, R - f[a[R]]);
+                }
+                int las = ans, t = L;
+                while (l < L) {
+                    --L;
+                    int x = f[a[L]], y = g[a[L]];
+                    st[L] = std::make_pair(x, y);
+                    f[a[L]] = L;
+                    if (g[a[L]] == 0) g[a[L]] = L;
+                    else ans = std::max(ans, g[a[L]] - L);
+                }
+                z[o] = ans;
+                for (int j = l; j < t; ++j) {
+                    auto[x, y] = st[j];
+                    f[a[j]] = x, g[a[j]] = y;
+                }
+                ans = las, L = t;
+            }
+        }
+        for (int i = 1; i <= m; ++i) {
+            std::cout << z[i] << '\n';
+        }
+    };
+}
+int main() {
+    std::ios::sync_with_stdio(0);
+    std::cin.tie(0), Acc::work();
 }
 \end{lstlisting}
 
@@ -5679,6 +7089,87 @@ int main() {
         std::cout << ans[i] << endl;
     }
     return 0;
+}
+\end{lstlisting}
+
+\subsection{ segment tree devide and conquer }
+\begin{lstlisting}[style=cpp]
+/* seg div @ wrb */
+#include<bits/stdc++.h>
+using namespace std;
+namespace Acc {
+    const int N = 1e5;
+    pair<int, int> q[N * 2];
+    vector<int> v[N * 4];
+    int n, l, r, p;
+    int fa[N * 2], sz[N * 2];
+    pair<int, int> st[N * 2];
+    int tp;
+    void ins(int o, int L, int R) {
+        if (r < L || l > R) return ;
+        if (l <= L && R <= r) {
+            v[o].emplace_back(p);
+            return ;
+        }
+        int md = L + R >> 1;
+        ins(o << 1, L, md);
+        ins(o << 1 | 1, md + 1, R);
+    }
+    auto gf = [](int x) {
+        while (x != fa[x]) x = fa[x];
+        return x;
+    };
+    auto mg = [](int x, int y) {
+        x = gf(x), y = gf(y);
+        if (x != y) {
+            if (sz[x] < sz[y]) swap(x, y);
+            fa[y] = x, sz[x] += sz[y];
+            st[++tp] = {x, y};
+        }
+    };
+    void dfs(int o, int L, int R) {
+        int lastp = tp;
+        for (int i : v[o]) {
+            auto[x, y] = q[i];
+            mg(x, y + n), mg(x + n, y);
+            if (gf(x) == gf(x + n)) {
+                for (int i = L; i <= R; ++i) {
+                    cout << "No\n";
+                }
+                goto _;
+            }
+        }
+        if (L == R) {
+            cout << "Yes\n";
+        } else {
+            int md = L + R >> 1;
+            dfs(o << 1, L, md);
+            dfs(o << 1 | 1, md + 1, R);
+        }
+        _:
+        for (; tp > lastp; --tp) {
+            auto[x, y] = st[tp];
+            fa[y] = y, sz[x] -= sz[y];
+        }
+    }
+    auto work = []() {
+        int m, k;
+        cin >> n >> m >> k;
+        for (int i = 1; i <= m; ++i) {
+            int x, y;
+            cin >> x >> y >> l >> r;
+            if (++l <= r) {
+                q[p = i] = {x, y}, ins(1, 1, k);
+            }
+        }
+        iota(fa + 1, fa + n * 2 + 1, 1);
+        fill(sz + 1, sz + n * 2 + 1, 1);
+        dfs(1, 1, k);
+    };
+}
+int main() {
+    ios::sync_with_stdio(0);
+    cin.tie(0), Acc::work();
 }
 \end{lstlisting}
 
