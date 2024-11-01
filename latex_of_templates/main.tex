@@ -15,6 +15,7 @@
 \usepackage{setspace}
 \usepackage{tabularx}
 \usepackage{titlesec}
+\usepackage{minted}  % use for bash
 \usepackage[dvipsnames, svgnames, x11names]{xcolor}
 
 \geometry{left=2.5cm, right=1.5cm, top = 1.5cm, bottom = 1.5cm}
@@ -28,14 +29,13 @@
 
 \lstset{
   numbers           = left,                                 % 左侧行号
-% numbers           = none,                                 % 不显示行号
   columns           = fixed,                                %
   showtabs          = false,                                % 不显示tab符号
   showspaces        = false,                                % 不显示space符号
   breakindent       = 2em,                                  % 自动换行平移距离
   tabsize           = 4,                                    % tab长度
   rulesepcolor      = \color[RGB]{20,20,20},                % 边框颜色
-  mathescape        = true,                                 % 显示LaTex公式
+  mathescape        = false,                                % 显示LaTex公式
   escapeinside      = {(*@}{@*)},                           %
 % lineskip          = 0.0em,                                %
   basewidth         = 0.5em,                                %
@@ -43,7 +43,6 @@
   xrightmargin      = 0.0em,                                %
   aboveskip         = 1.0em,                                %
   belowskip         = 0.5em,                                %
-% language          = c++,                                  % 默认语言
 }
 \lstdefinestyle{cpp}{
   language          = c++,                                  %
@@ -84,6 +83,18 @@
     sync_with_stdio,                                        % 额外高亮词
   },
 }
+\lstdefinestyle{shell}{
+  language          = bash,                                 %
+  tabsize           = 4,                                    % tab长度
+  basicstyle        = \linespread{0.75}\small\ttfamily,     % 基本格式
+  keywordstyle      = \color{blue}\bfseries,                % 关键词格式
+  commentstyle      = \color{Sepia},                        % 注释格式
+% stringstyle       = \color{violet}\slshape,               % 字符串格式
+  numberstyle       = \color{darkgray},                     % 行号格式
+  showstringspaces  = false,                                % 不显示字符串中的space符号
+  frame             = single,                               % 边框类型
+  breaklines        = true,                                 % 过长自动换行
+}
 
 %\AtBeginEnvironment{align*}{\useshortskip}
 
@@ -103,9 +114,9 @@
 
 \title{	
 	\normalfont\normalsize
-%	\begin{center}
-%       \includegraphics[width=0.6\columnwidth]{logo.png}
-%   \end{center}
+ %        \begin{center}
+ %            \includegraphics[width=0.6\columnwidth]{logo.png}
+ %        \end{center}
 	\textsc{Beijing Normal University \\ School of Mathematics}\\ 
 	\vspace{25pt} 
 	\rule{\linewidth}{0.5pt}\\ 
@@ -131,14 +142,6 @@
 
 // using namespace std;
 
-#define typet typename T
-#define typeu typename U
-#define types typename... Ts
-#define tempt template <typet>
-#define tempu template <typeu>
-#define temps template <types>
-#define tandu template <typet, typeu>
-
 using LL = long long;
 using i128 = __int128;
 using PII = std::pair<int, int>;
@@ -149,12 +152,12 @@ using ULL = unsigned long long;
 using PIL = std::pair<int, LL>;
 using PLI = std::pair<LL, int>;
 using PLL = std::pair<LL, LL>;
-*/
 using vi = std::vector<int>;
 using vvi = std::vector<vi>;
 using vl = std::vector<LL>;
 using vvl = std::vector<vl>;
 using vpi = std::vector<PII>;
+*/
 
 #define ff first
 #define ss second
@@ -169,13 +172,8 @@ using vpi = std::vector<PII>;
     } while (false)
 #endif
 
-constexpr int mod = 998244353;
-constexpr int inv2 = (mod + 1) / 2;
 constexpr int inf = 0x3f3f3f3f;
 constexpr LL INF = 1e18;
-constexpr double pi = 3.141592653589793;
-constexpr double eps = 1e-6;
-
 constexpr int lowbit(int x) { return x & -x; }
 /*
 constexpr int add(int x, int y) { return x + y < mod ? x + y : x - mod + y; }
@@ -202,19 +200,16 @@ temps constexpr int mul(Ts... x) {
     return y;
 }
 */
-
 tandu bool Max(T& x, const U& y) { return x < y ? x = y, true : false; }
 tandu bool Min(T& x, const U& y) { return x > y ? x = y, true : false; }
 
 void solut() {
-    
+    ;
 }
 
 int main() {
     std::ios::sync_with_stdio(false);
     std::cin.tie(0);
-    std::cout.tie(0);
-
     int t = 1;
     std::cin >> t;
     while (t--) {
@@ -225,20 +220,19 @@ int main() {
 \end{lstlisting}
 
 \subsection{ debug.h }
-md5 为: 
 \begin{lstlisting}[style=cpp]
-tandu std::ostream& operator<<(std::ostream& os, const std::pair<T, U>& p) {
-    return os << '<' << p.ff << ',' << p.ss << '>';
+template <typename T, typename U>
+std::ostream& operator<<(std::ostream& os, const std::pair<T, U>& p) {
+    return os << '<' << p.first << ',' << p.second << '>';
 }
 
 template <
-    typet, typename = decltype(std::begin(std::declval<T>())),
+    typename T, typename = decltype(std::begin(std::declval<T>())),
     typename = std::enable_if_t<!std::is_same_v<T, std::string>>>
 std::ostream& operator<<(std::ostream& os, const T& c) {
     auto it = std::begin(c);
     if (it == std::end(c)) return os << "{}";
-    for (os << '{' << *it; ++it != std::end(c); os << ',' << *it)
-        ;
+    for (os << '{' << *it; ++it != std::end(c); os << ',' << *it);
     return os << '}';
 }
 
@@ -248,135 +242,20 @@ std::ostream& operator<<(std::ostream& os, const T& c) {
         dbg(arg);                    \
     } while (false)
 
-temps void dbg(Ts... args) {
+template <typename... Ts>
+void dbg(Ts... args) {
     (..., (std::cerr << ' ' << args));
-    std::cerr << std::'\n';
-}
-\end{lstlisting}
-
-\subsection { \(F_p\) }
-\begin{lstlisting}[style=cpp]
-template <int P>
-struct Mint {
-    int v = 0;
-
-    // reflection
-    template <typet = int>
-    constexpr operator T() const {
-        return v;
-    }
-
-    // constructor //
-    constexpr Mint() = default;
-    template <typet>
-    constexpr Mint(T x) : v(x % P) {}
-    constexpr int val() const { return v; }
-    constexpr int mod() { return P; }
-
-    // io //
-    friend std::istream& operator>>(std::istream& is, Mint& x) {
-        LL y;
-        is >> y;
-        x = y;
-        return is;
-    }
-    friend std::ostream& operator<<(std::ostream& os, Mint x) { return os << x.v; }
-
-    // comparision //
-    friend constexpr bool operator==(const Mint& lhs, const Mint& rhs) { return lhs.v == rhs.v; }
-    friend constexpr bool operator!=(const Mint& lhs, const Mint& rhs) { return lhs.v != rhs.v; }
-    friend constexpr bool operator<(const Mint& lhs, const Mint& rhs) { return lhs.v < rhs.v; }
-    friend constexpr bool operator<=(const Mint& lhs, const Mint& rhs) { return lhs.v <= rhs.v; }
-    friend constexpr bool operator>(const Mint& lhs, const Mint& rhs) { return lhs.v > rhs.v; }
-    friend constexpr bool operator>=(const Mint& lhs, const Mint& rhs) { return lhs.v >= rhs.v; }
-
-    // arithmetic //
-    template <typet>
-    friend constexpr Mint power(Mint a, T n) {
-        Mint ans = 1;
-        while (n) {
-            if (n & 1) ans *= a;
-            a *= a;
-            n >>= 1;
-        }
-        return ans;
-    }
-    friend constexpr Mint inv(const Mint& rhs) { return power(rhs, P - 2); }
-    friend constexpr Mint operator+(const Mint& lhs, const Mint& rhs) {
-        return lhs.val() + rhs.val() < P ? lhs.val() + rhs.val() : lhs.val() - P + rhs.val();
-    }
-    friend constexpr Mint operator-(const Mint& lhs, const Mint& rhs) {
-        return lhs.val() < rhs.val() ? lhs.val() + P - rhs.val() : lhs.val() - rhs.val();
-    }
-    friend constexpr Mint operator*(const Mint& lhs, const Mint& rhs) {
-        return static_cast<LL>(lhs.val()) * rhs.val() % P;
-    }
-    friend constexpr Mint operator/(const Mint& lhs, const Mint& rhs) { return lhs * inv(rhs); }
-    Mint operator+() const { return *this; }
-    Mint operator-() const { return Mint() - *this; }
-    constexpr Mint& operator++() {
-        v++;
-        if (v == P) v = 0;
-        return *this;
-    }
-    constexpr Mint& operator--() {
-        if (v == 0) v = P;
-        v--;
-        return *this;
-    }
-    constexpr Mint& operator++(int) {
-        Mint ans = *this;
-        ++*this;
-        return ans;
-    }
-    constexpr Mint operator--(int) {
-        Mint ans = *this;
-        --*this;
-        return ans;
-    }
-    constexpr Mint& operator+=(const Mint& rhs) {
-        v = v + rhs;
-        return *this;
-    }
-    constexpr Mint& operator-=(const Mint& rhs) {
-        v = v - rhs;
-        return *this;
-    }
-    constexpr Mint& operator*=(const Mint& rhs) {
-        v = v * rhs;
-        return *this;
-    }
-    constexpr Mint& operator/=(const Mint& rhs) {
-        v = v / rhs;
-        return *this;
-    }
-};
-using Z = Mint<998244353>;
+    std::cerr << std::endl;
+}    
 \end{lstlisting}
 
 \newpage
 \section{ shell scripts }
-\subsection{ md5er.sh }
-得到一份 cpp 代码的 MD5 码.
+\subsection{ linux version }
+\lstinputlisting[style=shell]{shell_scripts/checker.sh}
 
-\begin{center}
-	\includegraphics[width=17cm]{graphs/md5er.png}
-\end{center}
-
-\subsection{ formater.sh }
-
-修改 .out 以及 .ans 的格式:
-
-\begin{center}
-	\includegraphics[width=17cm]{graphs/formater.png}
-\end{center}
-
-\subsection{ checker.sh }
-对一份代码跑所有测试样例并比对.
-
-\begin{center}
-	\includegraphics[width=17cm]{graphs/checker.png}
-\end{center}
+\subsection{ windows version }
+\lstinputlisting[style=shell]{shell_scripts/checker.bat}
 
 \newpage
 \section{ data structure }
@@ -404,30 +283,29 @@ for (int i = 1; i <= n; i++) {
 
 \subsection{ DSU }
 \begin{lstlisting}[style=cpp]
+/* DSU */
 vi fa(n + 1);
 std::iota(all(fa), 0);
-std::function<void(int)> find = [&] (int x) -> int{
+std::function<int(int)> find = [&] (int x) -> int{
     return x == fa[x] ? x : fa[x] = find(fa[x]);
 };
 auto merge = [&] (int x, int y) -> void{
     x = find(x), y = find(y);
     if (x == y) return;
-    /* operations */
+    // operations //
     fa[y] = x;
 };
 \end{lstlisting}
 
-\subsection{ ST }
-
-用于解决可重复问题的数据结构。
-
-可重复问题是指对运算 $opt$，满足 $x \ opt \ x = x$。
+\subsection{ spare table }
 
 \subsubsection*{ 一维 }
 \begin{lstlisting}[style=cpp]
-vvi f(n + 1, vi(30));
+/* spare table */
+int B = 30;
+vvi f(n + 1, vi(B));
 vi Log2(n + 1);
-auto ST_init = [&]() -> void {
+auto init = [&]() -> void {
     for (int i = 1; i <= n; i++) {
         f[i][0] = a[i];
         if (i > 1) Log2[i] = Log2[i / 2] + 1;
@@ -439,18 +317,19 @@ auto ST_init = [&]() -> void {
         }
     }
 };
-
-auto ST_query = [&](int l, int r) -> int {
+init();
+auto query = [&](int l, int r) -> int {
     int t = Log2[r - l + 1];
     return std::max(f[l][t], f[r - (1 << t) + 1][t]);
-};
-\end{lstlisting}
+};\end{lstlisting}
 
 \subsubsection*{ 二维 }
 \begin{lstlisting}[style=cpp]
-std::vector f(n + 1, std::vector<std::array<std::array<int, 30>, 30>>(m + 1));
+/* spare table */
+intB = 30;
+std::vector f(n + 1, std::vector<std::array<std::array<int, B>, B>>(m + 1));
 vi Log2(n + 1);
-auto ST_init = [&]() -> void {
+auto init = [&]() -> void {
     for (int i = 2; i <= std::max(n, m); i++) {
         Log2[i] = Log2[i / 2] + 1;
     }
@@ -476,7 +355,8 @@ auto ST_init = [&]() -> void {
         }
     }
 };
-auto ST_query = [&](int x1, int y1, int x2, int y2) -> int {
+init();
+auto query = [&](int x1, int y1, int x2, int y2) -> int {
     int ki = Log2[x2 - x1 + 1], kj = Log2[y2 - y1 + 1];
     int t1 = f[x1][y1][ki][kj];
     int t2 = f[x2 - (1 << ki) + 1][y1][ki][kj];
@@ -486,11 +366,11 @@ auto ST_query = [&](int x1, int y1, int x2, int y2) -> int {
 };
 \end{lstlisting}
 
-\subsection{ cartesian tree }
-一种特殊的平衡树，用元素的值作为平衡点节点的 $val$，元素的下标作为 $key$。
+\subsection{ Cartesian tree }
+一种特殊的平衡树, 用元素的值作为平衡点节点的 $val$, 元素的下标作为 $key$.
 
 \begin{lstlisting}[style=cpp]
-// cartesian tree //
+/* cartesian tree */
 vi ls(n + 1), rs(n + 1), stk(n + 1);
 int top = 1;
 for (int i = 1; i <= n; i++) {
@@ -504,521 +384,18 @@ for (int i = 1; i <= n; i++) {
 \end{lstlisting}
 
 \subsection{ segment tree }
-\subsubsection*{ 维护半群 }
-\begin{lstlisting}[style=cpp]
-struct Info {
-    /* 重载 operator+ */
-};
 
-struct Tag {
-    /* 重载 operator== */
-};
+TODO
 
-void infoApply(Info& a, int l, int r, const Tag& tag) {}
+\subsection{ persistent segment tree }
 
-void tagApply(Tag& a, int l, int r, const Tag& tag) {}
-
-template <class Info, class Tag>
-class segTree {
-#define ls i << 1
-#define rs i << 1 | 1
-#define mid ((l + r) >> 1)
-#define lson ls, l, mid
-#define rson rs, mid + 1, r
-
-    int n;
-    std::vector<Info> info;
-    std::vector<Tag> tag;
-
-    public:
-    segTree(const std::vector<Info>& init) : n(init.size() - 1) {
-        assert(n > 0);
-        info.resize(4 << std::__lg(n));
-        tag.resize(4 << std::__lg(n));
-        auto build = [&](auto dfs, int i, int l, int r) {
-            if (l == r) {
-                info[i] = init[l];
-                return;
-            }
-            dfs(dfs, lson);
-            dfs(dfs, rson);
-            push_up(i);
-        };
-        build(build, 1, 1, n);
-    }
-
-
-    private:
-    void push_up(int i) { info[i] = info[ls] + info[rs]; }
-
-
-    template <class... T>
-    void apply(int i, int l, int r, const T&... val) {
-        ::infoApply(info[i], l, r, val...);
-        ::tagApply(tag[i], l, r, val...);
-    }
-
-    void push_down(int i, int l, int r) {
-        if (tag[i] == Tag{}) return;
-        apply(lson, tag[i]);
-        apply(rson, tag[i]);
-        tag[i] = {};
-    }
-
-    public:
-    template <class... T>
-    void rangeApply(int ql, int qr, const T&... val) {
-        auto dfs = [&](auto dfs, int i, int l, int r) {
-            if (qr < l or r < ql) return;
-            if (ql <= l and r <= qr) {
-                apply(i, l, r, val...);
-                return;
-            }
-            push_down(i, l, r);
-            dfs(dfs, lson);
-            dfs(dfs, rson);
-            push_up(i);
-        };
-        dfs(dfs, 1, 1, n);
-    }
-
-    Info rangeAsk(int ql, int qr) {
-        Info res{};
-        auto dfs = [&](auto dfs, int i, int l, int r) {
-            if (qr < l or r < ql) return;
-            if (ql <= l and r <= qr) {
-                res = res + info[i];
-                return;
-            }
-            push_down(i, l, r);
-            dfs(dfs, lson);
-            dfs(dfs, rson);
-        };
-        dfs(dfs, 1, 1, n);
-        return res;
-    }
-
-#undef rson
-#undef lson
-#undef mid
-#undef rs
-#undef ls
-};
-\end{lstlisting}
-
-\subsubsection*{ 区间修改 (带 add 和 mul 的 lazy tag) }
-
-n 个数, m 次操作，操作分为
-
-1. \(1 \ x \ y \ k\): 将区间 \([x, \ y]\) 中的数每个乘以 \(k\).
-2. \(2 \ x \ y \ k\): 将区间 \([x, \ y]\) 中的数每个加上 \(k\).
-3. \(3 \ x \ y\): 输出区间 \([x, \ y]\) 中数的和. (对 \(p\) 取模)
-
-\begin{lstlisting}[style=cpp]
-// Problem: P3373 【模板】线段树 2
-
-struct Info {
-    LL sum = 0;
-
-    Info(LL _sum = 0) : sum(_sum) {}
-
-    Info operator+(const Info& b) const { return Info(add(sum + b.sum)); }
-};
-
-struct Tag {
-    LL add = 0, mul = 1;
-
-    Tag(LL _add = 0, LL _mul = 1) : add(_add), mul(_mul) {}
-
-    bool operator==(const Tag& b) const { return add == b.add and mul == b.mul; }
-};
-
-void infoApply(Info& a, int l, int r, const Tag& tag) {
-    a.sum = add(mul(a.sum, tag.mul), mul((r - l + 1), tag.add));
-}
-
-void tagApply(Tag& a, int l, int r, const Tag& tag) {
-    a.add = add(mul(a.add, tag.mul), tag.add);
-    a.mul = mul(a.mul, tag.mul);
-}
-
-template <class Info, class Tag>
-class segTree {
-#define ls i << 1
-#define rs i << 1 | 1
-#define mid ((l + r) >> 1)
-#define lson ls, l, mid
-#define rson rs, mid + 1, r
-
-    int n;
-    std::vector<Info> info;
-    std::vector<Tag> tag;
-
-   public:
-    segTree(const std::vector<Info>& init) : n(init.size() - 1) {
-        assert(n > 0);
-        info.resize(4 << std::__lg(n));
-        tag.resize(4 << std::__lg(n));
-        auto build = [&](auto dfs, int i, int l, int r) {
-            if (l == r) {
-                info[i] = init[l];
-                return;
-            }
-            dfs(dfs, lson);
-            dfs(dfs, rson);
-            push_up(i);
-        };
-        build(build, 1, 1, n);
-    }
-
-
-   private:
-    void push_up(int i) { info[i] = info[ls] + info[rs]; }
-
-
-    template <class... T>
-    void apply(int i, int l, int r, const T&... val) {
-        ::infoApply(info[i], l, r, val...);
-        ::tagApply(tag[i], l, r, val...);
-    }
-
-    void push_down(int i, int l, int r) {
-        if (tag[i] == Tag{}) return;
-        apply(lson, tag[i]);
-        apply(rson, tag[i]);
-        tag[i] = {};
-    }
-
-   public:
-    template <class... T>
-    void rangeMerge(int ql, int qr, const T&... val) {
-        auto dfs = [&](auto dfs, int i, int l, int r) {
-            if (qr < l or r < ql) return;
-            if (ql <= l and r <= qr) {
-                apply(i, l, r, val...);
-                return;
-            }
-            push_down(i, l, r);
-            dfs(dfs, lson);
-            dfs(dfs, rson);
-            push_up(i);
-        };
-        dfs(dfs, 1, 1, n);
-    }
-
-    Info rangeQuery(int ql, int qr) {
-        Info res{};
-        auto dfs = [&](auto dfs, int i, int l, int r) {
-            if (qr < l or r < ql) return;
-            if (ql <= l and r <= qr) {
-                res = res + info[i];
-                return;
-            }
-            push_down(i, l, r);
-            dfs(dfs, lson);
-            dfs(dfs, rson);
-        };
-        dfs(dfs, 1, 1, n);
-        return res;
-    }
-
-#undef rson
-#undef lson
-#undef mid
-#undef rs
-#undef ls
-};
-
-int main() {
-    std::ios::sync_with_stdio(false);
-    std::cin.tie(0);
-    std::cout.tie(0);
-
-    int n, m, p;
-    std::cin >> n >> m >> p;
-    std::vector<Info> a(n + 1);
-    for (int i = 1; i <= n; i++) std::cin >> a[i].sum;
-    static segTree<Info, Tag> tr(a);
-
-    while (m--) {
-        int op, k, l, r;
-        std::cin >> op >> l >> r;
-        if (op == 1) {
-            std::cin >> k;
-            tr.rangeMerge(l, r, Tag(0, k));
-        } else if (op == 2) {
-            std::cin >> k;
-            tr.rangeMerge(l, r, Tag(k, 1));
-        } else {
-            std::cout << tr.rangeQuery(l, r).sum << '\n';
-        }
-    }
-
-    return 0;
-}
-\end{lstlisting}
-
-\subsubsection*{ 动态开点权值线段树 }
-
-如果要实现 push up 记得先开点再 push.
-
-\begin{lstlisting}[style=cpp]
-// Problem: P3369 【模板】普通平衡树
-
-struct node {
-    int id, l, r;
-    int ls, rs;
-    int sum;
-
-    node(int _id, int _l, int _r) : id(_id), l(_l), r(_r) {
-        ls = rs = 0;
-        sum = 0;
-    }
-};
-
-
-// Segment tree //
-int idx = 1;
-std::vector<node> tree = {node{0, 0, 0}};
-
-auto new_node = [&](int l, int r) -> int {
-    tree.push_back(node(idx, l, r));
-    return idx++;
-};
-
-auto push_up = [&](int u) -> void {
-    tree[u].sum = 0;
-    if (tree[u].ls) tree[u].sum += tree[tree[u].ls].sum;
-    if (tree[u].rs) tree[u].sum += tree[tree[u].rs].sum;
-};
-
-auto build = [&]() { new_node(-10000000, 10000000); };
-
-std::function<void(int, int, int, int)> insert = [&](int u, int l, int r, int x) {
-    if (l == r) {
-        tree[u].sum++;
-        return;
-    }
-    int mid = (l + r - 1) / 2;
-    if (x <= mid) {
-        if (!tree[u].ls) tree[u].ls = new_node(l, mid);
-        insert(tree[u].ls, l, mid, x);
-    } else {
-        if (!tree[u].rs) tree[u].rs = new_node(mid + 1, r);
-        insert(tree[u].rs, mid + 1, r, x);
-    }
-    push_up(u);
-};
-
-std::function<void(int, int, int, int)> remove = [&](int u, int l, int r, int x) {
-    if (l == r) {
-        if (tree[u].sum) tree[u].sum--;
-        return;
-    }
-    int mid = (l + r - 1) / 2;
-    if (x <= mid) {
-        if (!tree[u].ls) return;
-        remove(tree[u].ls, l, mid, x);
-    } else {
-        if (!tree[u].rs) return;
-        remove(tree[u].rs, mid + 1, r, x);
-    }
-    push_up(u);
-};
-
-std::function<int(int, int, int, int)> get_rank_by_key = [&](int u, int l, int r, int x) -> int {
-    if (l == r) {
-        return 1;
-    }
-    int mid = (l + r - 1) / 2;
-    int ans = 0;
-    if (x <= mid) {
-        if (!tree[u].ls) return 1;
-        ans = get_rank_by_key(tree[u].ls, l, mid, x);
-    } else {
-        if (!tree[u].rs) return tree[tree[u].ls].sum + 1;
-        if (!tree[u].ls) {
-            ans = get_rank_by_key(tree[u].rs, mid + 1, r, x);
-        } else {
-            ans = get_rank_by_key(tree[u].rs, mid + 1, r, x) + tree[tree[u].ls].sum;
-        }
-    }
-    return ans;
-};
-
-std::function<int(int, int, int, int)> get_key_by_rank = [&](int u, int l, int r, int x) -> int {
-    if (l == r) {
-        return l;
-    }
-    int mid = (l + r - 1) / 2;
-    if (tree[u].ls) {
-        if (x <= tree[tree[u].ls].sum) {
-            return get_key_by_rank(tree[u].ls, l, mid, x);
-        } else {
-            return get_key_by_rank(tree[u].rs, mid + 1, r, x - tree[tree[u].ls].sum);
-        }
-    } else {
-        return get_key_by_rank(tree[u].rs, mid + 1, r, x);
-    }
-};
-
-std::function<int(int)> get_prev = [&](int x) -> int {
-    int rank = get_rank_by_key(1, -10000000, 10000000, x) - 1;
-    debug(rank);
-    return get_key_by_rank(1, -10000000, 10000000, rank);
-};
-
-std::function<int(int)> get_next = [&](int x) -> int {
-    debug(x + 1);
-    int rank = get_rank_by_key(1, -10000000, 10000000, x + 1);
-    debug(rank);
-    return get_key_by_rank(1, -10000000, 10000000, rank);
-};
-\end{lstlisting}
-
-\subsubsection*{ (权值) 线段树合并 }
-首先村落里的一共有 \(n\) 座房屋, 并形成一个树状结构. 然后救济粮分 \(m\) 次发放, 每次选择两个房屋 \((x,y)\), 然后对于 \(x\) 到 \(y\) 的路径上每座房子里发放一袋 \(z\) 类型的救济粮.
-查询所有的救济粮发放完毕后, 每座房子里存放的最多的是哪种救济粮.
-
-\begin{lstlisting}[style=cpp]
-// Problem: P4556 [Vani有约会]雨天的尾巴 /【模板】线段树合并
-
-struct node {
-    int l, r, id;
-    int ls, rs;
-    int cnt, ans;
-
-    node(int _id, int _l, int _r) : id(_id), l(_l), r(_r) {
-        ls = rs = 0;
-        cnt = ans = 0;
-    }
-};
-
-int main() {
-    std::ios::sync_with_stdio(false);
-    std::cin.tie(0);
-    std::cout.tie(0);
-
-    int n, m;
-    std::cin >> n >> m;
-    vvi e(n + 1);
-    vi ans(n + 1);
-    for (int i = 1; i < n; i++) {
-        int u, v;
-        std::cin >> u >> v;
-        e[u].push_back(v);
-        e[v].push_back(u);
-    }
-
-    /* Segment tree */
-    int idx = 1;
-    vi rt(n + 1);
-    std::vector<node> tree = {node{0, 0, 0}};
-
-    auto new_node = [&](int l, int r) -> int {
-        tree.push_back(node(idx, l, r));
-        return idx++;
-    };
-
-    auto push_up = [&](int u) -> void {
-        if (!tree[u].ls) {
-            tree[u].cnt = tree[tree[u].rs].cnt;
-            tree[u].ans = tree[tree[u].rs].ans;
-        } else if (!tree[u].rs) {
-            tree[u].cnt = tree[tree[u].ls].cnt;
-            tree[u].ans = tree[tree[u].ls].ans;
-        } else {
-            if (tree[tree[u].rs].cnt > tree[tree[u].ls].cnt) {
-                tree[u].cnt = tree[tree[u].rs].cnt;
-                tree[u].ans = tree[tree[u].rs].ans;
-            } else {
-                tree[u].cnt = tree[tree[u].ls].cnt;
-                tree[u].ans = tree[tree[u].ls].ans;
-            }
-        }
-    };
-
-    std::function<void(int, int, int, int, int)> modify = [&](int u, int l, int r, int x, int k) {
-        if (l == r) {
-            tree[u].cnt += k;
-            tree[u].ans = l;
-            return;
-        }
-        int mid = (l + r) >> 1;
-        if (x <= mid) {
-            if (!tree[u].ls) tree[u].ls = new_node(l, mid);
-            modify(tree[u].ls, l, mid, x, k);
-        } else {
-            if (!tree[u].rs) tree[u].rs = new_node(mid + 1, r);
-            modify(tree[u].rs, mid + 1, r, x, k);
-        }
-        push_up(u);
-    };
-
-    std::function<int(int, int, int, int)> merge = [&](int u, int v, int l, int r) -> int {
-        /* v 的信息传递给 u */
-        if (!u) return v;
-        if (!v) return u;
-        if (l == r) {
-            tree[u].cnt += tree[v].cnt;
-            return u;
-        }
-        int mid = (l + r) >> 1;
-        tree[u].ls = merge(tree[u].ls, tree[v].ls, l, mid);
-        tree[u].rs = merge(tree[u].rs, tree[v].rs, mid + 1, r);
-        push_up(u);
-        return u;
-    };
-
-    /* LCA */
-
-    for (int i = 1; i <= n; i++) {
-        rt[i] = idx;
-        new_node(1, 100000);
-    }
-
-    for (int i = 1; i <= m; i++) {
-        int u, v, w;
-        std::cin >> u >> v >> w;
-        int lca = LCA(u, v);
-        modify(rt[u], 1, 100000, w, 1);
-        modify(rt[v], 1, 100000, w, 1);
-        modify(rt[lca], 1, 100000, w, -1);
-        if (father[lca][0]) {
-            modify(rt[father[lca][0]], 1, 100000, w, -1);
-        }
-    }
-
-    /* dfs */
-    std::function<void(int, int)> Dfs = [&](int u, int fa) {
-        for (auto v : e[u]) {
-            if (v == fa) continue;
-            Dfs(v, u);
-            merge(rt[u], rt[v], 1, 100000);
-        }
-        ans[u] = tree[rt[u]].ans;
-        if (tree[rt[u]].cnt == 0) ans[u] = 0;
-    };
-
-    Dfs(1, 0);
-
-    for (int i = 1; i <= n; i++) {
-        std::cout << ans[i] << '\n';
-    }
-
-    return 0;
-}
-\end{lstlisting}
-
-\subsection{ hjt segment tree }
-
-\subsubsection*{ 第 1 个例题 }
+\subsubsection*{ 单点修改, 版本拷贝 }
 
 \(n\) 个数, \(m\) 次操作, 操作分别为
 
 \begin{enumerate}
-	\item $v_i \ 1 \ loc_i \ value_i$: 将第 $v_i$ 个版本的 $a[loc_i]$ 修改为 $value_i$,
-	\item $v_i \ 2 \ loc_i$: 拷贝第 $v_i$ 个版本, 并查询该版本的 $a[loc_i]$.
+    \item $v_i \ 1 \ loc_i \ value_i$: 将第 $v_i$ 个版本的 $a[loc_i]$ 修改为 $value_i$,
+    \item $v_i \ 2 \ loc_i$: 拷贝第 $v_i$ 个版本, 并查询该版本的 $a[loc_i]$.
 \end{enumerate}
 
 \begin{lstlisting}[style=cpp]
@@ -1105,7 +482,7 @@ int main() {
 }
 \end{lstlisting}
 
-\subsubsection*{ 第 2 个例题 }
+\subsubsection*{ 区间第 \(k\) 小 }
 
 长度为 $n$ 的序列 $a$, $m$ 次查询, 每次查询 $[l, r]$ 中的第 $k$ 小值.
 
@@ -1192,161 +569,17 @@ int main() {
 
 \subsection{ treap }
 
-\subsubsection*{ 旋转 treap }
-
+\subsubsection*{ fhq treap }
 $n$ 次操作, 操作分为如下 $6$ 种:
+
 \begin{enumerate}
-	\item 插入数 $x$,
-	\item 删除数 $x$ (若有多个相同的数，只删除一个),
-	\item 查询数 $x$ 的排名 (排名定义为小于 $x$ 的数的个数 $+$ $1$),
-	\item 查询排名为 $x$ 的数,
-	\item 求 $x$ 的前驱 (前驱定义为小于 $x$ 的最大数),
-	\item 求 $x$ 的后继 (后继定义为大于 $x$ 的最小数).
+    \item 插入数 $x$;
+    \item 删除数 $x$ (若有多个相同的数，只删除一个);
+    \item 查询数 $x$ 的排名 (排名定义为小于 $x$ 的数的个数 $+$ $1$);
+    \item 查询排名为 $x$ 的数;
+    \item 求 $x$ 的前驱 (前驱定义为小于 $x$ 的最大数);
+    \item 求 $x$ 的后继 (后继定义为大于 $x$ 的最小数).
 \end{enumerate}
-
-\begin{lstlisting}[style=cpp]
-// Problem: P3369 【模板】普通平衡树
-
-int n, root, idx;
-
-struct node {
-    int l, r;
-    int key, val;
-    int cnt, size;
-} treap[N];
-
-void push_up(int p) {
-    treap[p].size = treap[treap[p].l].size + treap[treap[p].r].size + treap[p].cnt;
-}
-
-int get_node(int key) {
-    treap[++idx].key = key;
-    treap[idx].val = rand();
-    treap[idx].cnt = treap[idx].size = 1;
-    return idx;
-}
-
-void zig(int &p) {
-    // 右旋 //
-    int q = treap[p].l;
-    treap[p].l = treap[q].r, treap[q].r = p, p = q;
-    push_up(treap[p].r), push_up(p);
-}
-
-void zag(int &p) {
-    // 左旋 //
-    int q = treap[p].r;
-    treap[p].r = treap[q].l, treap[q].l = p, p = q;
-    push_up(treap[p].l), push_up(p);
-}
-
-void build() {
-    get_node(-inf), get_node(inf);
-    root = 1, treap[1].r = 2;
-    push_up(root);
-    if (treap[1].val < treap[2].val) zag(root);
-}
-
-void insert(int &p, int key) {
-    if (!p) {
-        p = get_node(key);
-    } else if (treap[p].key == key) {
-        treap[p].cnt++;
-    } else if (treap[p].key > key) {
-        insert(treap[p].l, key);
-        if (treap[treap[p].l].val > treap[p].val) zig(p);
-    } else {
-        insert(treap[p].r, key);
-        if (treap[treap[p].r].val > treap[p].val) zag(p);
-    }
-    push_up(p);
-}
-
-void remove(int &p, int key) {
-    if (!p) return;
-    if (treap[p].key == key) {
-        if (treap[p].cnt > 1) {
-            treap[p].cnt--;
-        } else if (treap[p].l || treap[p].r) {
-            if (!treap[p].r || treap[treap[p].l].val > treap[treap[p].r].val) {
-                zig(p);
-                remove(treap[p].r, key);
-            } else {
-                zag(p);
-                remove(treap[p].l, key);
-            }
-        } else {
-            p = 0;
-        }
-    } else if {
-        (treap[p].key > key) remove(treap[p].l, key);
-    } else {
-        remove(treap[p].r, key);
-    }
-    push_up(p);
-}
-
-int get_rank_by_key(int p, int key) {
-    // 通过数值找排名 //
-    if (!p) return 0;
-    if (treap[p].key == key) return treap[treap[p].l].size;
-    if (treap[p].key > key) return get_rank_by_key(treap[p].l, key);
-    return treap[treap[p].l].size + treap[p].cnt + get_rank_by_key(treap[p].r, key);
-}
-
-int get_key_by_rank(int p, int rank) {
-    // 通过排名找数值 //
-    if (!p) return inf;
-    if (treap[treap[p].l].size >= rank) return get_key_by_rank(treap[p].l, rank);
-    if (treap[treap[p].l].size + treap[p].cnt >= rank) return treap[p].key;
-    return get_key_by_rank(treap[p].r, rank - treap[treap[p].l].size - treap[p].cnt);
-}
-
-int get_prev(int p, int key) {
-    // 找前驱 //
-    if (!p) return -inf;
-    if (treap[p].key >= key) return get_prev(treap[p].l, key);
-    return max(treap[p].key, get_prev(treap[p].r, key));
-}
-
-int get_next(int p, int key) {
-    // 找后继 //
-    if (!p) return inf;
-    if (treap[p].key <= key) return get_next(treap[p].r, key);
-    return min(treap[p].key, get_next(treap[p].l, key));
-}
-
-int main() {
-    ios::sync_with_stdio(false);
-    cin.tie(0);
-    cout.tie(0);
-
-    cin >> n;
-    build();
-    rep(i, 1, n) {
-        int op, x;
-        cin >> op >> x;
-        if (op == 1) {
-            insert(root, x);
-        } else if (op == 2) {
-            remove(root, x);
-        } else if (op == 3) {
-            cout << get_rank_by_key(root, x) << '\n';
-        } else if (op == 4) {
-            cout << get_key_by_rank(root, x + 1) << '\n';
-        } else if (op == 5) {
-            cout << get_prev(root, x) << '\n';
-        } else {
-            cout << get_next(root, x) << '\n';
-        }
-    }
-    return 0;
-}
-\end{lstlisting}
-
-\subsubsection*{ 无旋 treap }
-
-与旋转 Treap 同一个题目
 
 \begin{lstlisting}[style=cpp]
 struct node {
@@ -1519,9 +752,7 @@ int main() {
 
 \subsubsection*{ 用 01 trie 实现的一种方式 }
 
-同样的题目, 注意使用 01 trie 只能存在非负数.
-
-速度能快不少, 但只能单点操作, 而且有点费空间.
+同样的题目, 注意使用 01 trie 只能存在非负数. 速度能快不少, 但只能单点操作, 而且有点费空间.
 
 \begin{lstlisting}[style=cpp]
 // 洛谷 P3369 【模板】普通平衡树
@@ -1722,15 +953,6 @@ int main() {
 
 \subsubsection*{ 普通平衡树 }
 
-$n$ 次操作, 操作分为如下 $6$ 种:
-
-1. 插入数 $x$
-2. 删除数 $x$ (若有多个相同的数，只删除一个)
-3. 查询数 $x$ 的排名 (排名定义为小于 $x$ 的数的个数 $+$ $1$)
-4. 查询排名为 $x$ 的数
-5. 求 $x$ 的前驱 (前驱定义为小于 $x$ 的最大数)
-6. 求 $x$ 的后继 (后继定义为大于 $x$ 的最小数)
-
 \begin{lstlisting}[style=cpp]
 // 洛谷 P3369 【模板】普通平衡树
 
@@ -1894,534 +1116,11 @@ int main() {
 }
 \end{lstlisting}
 
-\subsection{ tree in tree }
-\subsubsection*{ 线段树套线段树 }
-
-$n$ 个三维数对 $(a_i, b_i, c_i)$, 设 $f(i)$ 表示 $a_j \leqslant a_i$ 且 $b_j \leqslant b_i$ 且  $c_j \leqslant c_i$ 且 $i \neq j$ 的个数.
-输出 $f(i) \ (0 \leqslant i \leqslant n - 1)$  的值.
-
-\begin{lstlisting}[style=cpp]
-// 洛谷 P3810 【模板】三维偏序（陌上花开）
-
-struct node1 {
-    int l, r, root;
-} tr1[N << 2];
-
-struct node2 {
-    int ch[2], cnt;
-} tr2[N << 7];
-
-struct node {
-    int x, y, z, cnt;
-
-    bool operator==(const node& a) { return (x == a.x && y == a.y && z == a.z); }
-
-} data[N];
-
-bool cmp(node a, node b) {
-    if (a.x != b.x) return a.x < b.x;
-    if (a.y != b.y) return a.y < b.y;
-    return a.z < b.z;
-}
-
-int root_tot, n, m, ans[N], anss[N];
-
-void build(int u, int l, int r) {
-    tr1[u].l = l, tr1[u].r = r;
-    if (l != r) {
-        int mid = (l + r) >> 1;
-        build(u << 1, l, mid);
-        build(u << 1 | 1, mid + 1, r);
-    }
-}
-
-void modify_2(int& u, int l, int r, int pos) {
-    if (u == 0) u = ++root_tot;
-    tr2[u].cnt++;
-    if (l == r) return;
-    int mid = (l + r) >> 1;
-    if (pos <= mid) {
-        modify_2(tr2[u].ch[0], l, mid, pos);
-    } else {
-        modify_2(tr2[u].ch[1], mid + 1, r, pos);
-    }
-}
-
-int query_2(int& u, int l, int r, int x, int y) {
-    if (u == 0) return 0;
-    if (x <= l && r <= y) return tr2[u].cnt;
-    int mid = (l + r) >> 1, ans = 0;
-    if (x <= mid) ans += query_2(tr2[u].ch[0], l, mid, x, y);
-    if (mid < y) ans += query_2(tr2[u].ch[1], mid + 1, r, x, y);
-    return ans;
-}
-
-void modify_1(int u, int l, int r, int t) {
-    modify_2(tr1[u].root, 1, m, data[t].z);
-    if (l == r) return;
-    int mid = (l + r) >> 1;
-    if (data[t].y <= mid) {
-        modify_1(u << 1, l, mid, t);
-    } else {
-        modify_1(u << 1 | 1, mid + 1, r, t);
-    }
-}
-
-int query_1(int u, int l, int r, int t) {
-    if (1 <= l && r <= data[t].y) return query_2(tr1[u].root, 1, m, 1, data[t].z);
-    int mid = (l + r) >> 1, ans = 0;
-    if (1 <= mid) ans += query_1(u << 1, l, mid, t);
-    if (mid < data[t].y) ans += query_1(u << 1 | 1, mid + 1, r, t);
-    return ans;
-}
-
-int main() {
-    std::ios::sync_with_stdio(false);
-    std::cin.tie(0);
-    std::cout.tie(0);
-
-    std::cin >> n >> m;
-    rep(i, 1, n) {
-        int x, y, z;
-        std::cin >> x >> y >> z;
-        data[i] = {x, y, z};
-    }
-    std::sort(data + 1, data + n + 1, cmp);
-    build(1, 1, m);
-    rep(i, 1, n) {
-        modify_1(1, 1, m, i);
-        ans[i] = query_1(1, 1, m, i);
-    }
-    per(i, n - 1, 1) {
-        if (data[i] == data[i + 1]) ans[i] = ans[i + 1];
-    }
-    rep(i, 1, n) anss[ans[i]]++;
-    rep(i, 1, n) std::cout << anss[i] << endl;
-
-    return 0;
-}
-\end{lstlisting}
-
-\subsubsection*{ 线段树套平衡树 }
-
-长度为 $n$ 的序列和 $m$ 此操作, 包含 $5$ 种操作:
-\begin{enumerate}
-	\item $l \ r \ k$: 询问区间 $[l \sim r]$ 中数 $k$ 的排名.
-	\item $l \ r \ k$: 询问区间 $[l \sim r]$ 中排名为 $k$ 的数.
-	\item $pos \ k$: 将序列中 $pos$ 位置的数修改为 $k$.
-	\item $l \ r \ k$: 询问区间 $[l \sim r]$ 中数 $k$ 的前驱.
-	\item $l \ r \ k$: 询问区间 $[l \sim r]$ 中数 $k$ 的后继.
-\end{enumerate}
-
-treap 实现
-
-\begin{lstlisting}[style=cpp]    
-// 洛谷 P3380 【模板】二逼平衡树（树套树）
-
-int n, m, op, l, r, pos, key, root_tot;
-int a[N];
-
-struct node2 {
-    node2 *ch[2];
-    int key, val;
-    int cnt, size;
-
-    node2(int _key) : key(_key), cnt(1), size(1) {
-        ch[0] = ch[1] = nullptr;
-        val = rand();
-    }
-
-    // node2(node2 *_node2) {
-    // key = _node2->key, val = _node2->val, cnt = _node2->cnt, size = _node2->size;
-    // }
-
-    inline void push_up() {
-        size = cnt;
-        if (ch[0] != nullptr) size += ch[0]->size;
-        if (ch[1] != nullptr) size += ch[1]->size;
-    }
-};
-
-struct treap {
-    ···
-};
-
-treap tr2[N << 4];
-
-struct node1 {
-    int l, r, root;
-} tr1[N << 4];
-
-void build(int u, int l, int r) {
-    tr1[u] = {l, r, u};
-    root_tot = std::max(root_tot, u);
-    if (l == r) return;
-    int mid = (l + r) >> 1;
-    build(u << 1, l, mid), build(u << 1 | 1, mid + 1, r);
-}
-
-void modify(int u, int pos, int key) {
-    tr2[u].insert(key);
-    if (tr1[u].l == tr1[u].r) return;
-    int mid = (tr1[u].l + tr1[u].r) >> 1;
-    if (pos <= mid){
-        modify(u << 1, pos, key);
-    }
-    else{
-        modify(u << 1 | 1, pos, key);
-    }
-}
-
-int get_rank_by_key_in_interval(int u, int l, int r, int key) {
-    if (l <= tr1[u].l && tr1[u].r <= r) return tr2[u].get_rank_by_key(tr2[u].root, key) - 2;
-    int mid = (tr1[u].l + tr1[u].r) >> 1, ans = 0;
-    if (l <= mid) ans += get_rank_by_key_in_interval(u << 1, l, r, key);
-    if (mid < r) ans += get_rank_by_key_in_interval(u << 1 | 1, l, r, key);
-    return ans;
-}
-
-int get_key_by_rank_in_interval(int u, int l, int r, int rank) {
-    int L = 0, R = 1e8;
-    while (L < R) {
-        int mid = (L + R + 1) / 2;
-        if (get_rank_by_key_in_interval(1, l, r, mid) < rank){
-            L = mid;
-        }
-        else{
-            R = mid - 1;
-        }
-    }
-    return L;
-}
-
-void change(int u, int pos, int pre_key, int key) {
-    tr2[u].remove(pre_key);
-    tr2[u].insert(key);
-    if (tr1[u].l == tr1[u].r) return;
-    int mid = (tr1[u].l + tr1[u].r) >> 1;
-    if (pos <= mid){
-        change(u << 1, pos, pre_key, key);
-    }
-    else{
-        change(u << 1 | 1, pos, pre_key, key);
-    }
-}
-
-int get_prev_in_interval(int u, int l, int r, int key) {
-    if (l <= tr1[u].l && tr1[u].r <= r) return tr2[u].get_prev(key);
-    int mid = (tr1[u].l + tr1[u].r) >> 1, ans = -inf;
-    if (l <= mid) ans = std::max(ans, get_prev_in_interval(u << 1, l, r, key));
-    if (mid < r) ans = std::max(ans, get_prev_in_interval(u << 1 | 1, l, r, key));
-    return ans;
-}
-
-int get_nex_in_interval(int u, int l, int r, int key) {
-    if (l <= tr1[u].l && tr1[u].r <= r) return tr2[u].get_nex(key);
-    int mid = (tr1[u].l + tr1[u].r) >> 1, ans = inf;
-    if (l <= mid) ans = std::min(ans, get_nex_in_interval(u << 1, l, r, key));
-    if (mid < r) ans = std::min(ans, get_nex_in_interval(u << 1 | 1, l, r, key));
-    return ans;
-}
-
-int main() {
-    std::ios::sync_with_stdio(false);
-    std::cin.tie(0);
-    std::cout.tie(0);
-
-    srand(time(0));
-
-    std::cin >> n >> m;
-    build(1, 1, n);
-    rep(i, 1, n) {
-        std::cin >> a[i];
-        modify(1, i, a[i]);
-    }
-    rep(i, 1, root_tot) { tr2[i].insert(inf), tr2[i].insert(-inf); }
-    rep(i, 1, m) {
-        std::cin >> op;
-        if (op == 1) {
-            std::cin >> l >> r >> key;
-            std::cout << get_rank_by_key_in_interval(1, l, r, key) + 1 << endl;
-        } else if (op == 2) {
-            std::cin >> l >> r >> key;
-            std::cout << get_key_by_rank_in_interval(1, l, r, key) << endl;
-        } else if (op == 3) {
-            std::cin >> pos >> key;
-            change(1, pos, a[pos], key);
-            a[pos] = key;
-        } else if (op == 4) {
-            std::cin >> l >> r >> key;
-            std::cout << get_prev_in_interval(1, l, r, key) << endl;
-        } else if (op == 5) {
-            std::cin >> l >> r >> key;
-            std::cout << get_nex_in_interval(1, l, r, key) << endl;
-        
-    }
-
-    return 0;
-}
-\end{lstlisting}
-
-然而洛谷上的会 T 两个点, Loj 和 ACwing 上的能过.
-
-Splay 实现
-
-\begin{lstlisting}[style=cpp]
-// 洛谷 P3380 【模板】二逼平衡树（树套树）
-
-int n, m, op, l, r, pos, key, root_tot;
-int a[N];
-
-struct node{
-    int ch[2], fa, key, siz, cnt;
-    
-    void init(int _fa, int _key){
-        fa = _fa, key = _key, siz = cnt = 1;
-    }
-    
-    void clear(){
-        ch[0] = ch[1] = fa = key = siz = cnt = 0;
-    }
-}tr[N * 30];
-
-struct splay{
-    
-    int idx;
-    
-    bool get(int u){
-        return u == tr[tr[u].fa].ch[1];
-    }
-    
-    void pushup(int u){
-        tr[u].siz = tr[tr[u].ch[0]].siz + tr[tr[u].ch[1]].siz + tr[u].cnt;
-    }
-    
-    void rotate(int x){
-        int y = tr[x].fa, z = tr[y].fa;
-        int op = get(x);
-        tr[y].ch[op] = tr[x].ch[op ^ 1];
-        if(tr[x].ch[op ^ 1]) tr[tr[x].ch[op ^ 1]].fa = y;
-        tr[x].ch[op ^ 1] = y;
-        tr[y].fa = x, tr[x].fa = z;
-        if(z) tr[z].ch[y == tr[z].ch[1]] = x;
-        pushup(y), pushup(x);
-    }
-    
-    void opt(int& root, int u, int k){
-        for(int f = tr[u].fa; f = tr[u].fa, f != k; rotate(u)){
-            if(tr[f].fa != k) rotate(get(u) == get(f) ? f : u);
-        }
-        if(k == 0) root = u;
-    }
-    
-    void insert(int& root, int key){
-        if(tr[root].siz == 0){
-            idx++;
-            tr[idx].init(0, key);
-            root = idx;
-            return;
-        }
-        int u = root, f = 0;
-        while(1){
-            if(tr[u].key == key){
-                tr[u].cnt++;
-                pushup(u), pushup(f);
-                opt(root, u, 0);
-                break;
-            }
-            f = u, u = tr[u].ch[tr[u].key < key];
-            if(!u){
-                idx++;
-                tr[idx].init(f, key);
-                tr[f].ch[tr[f].key < key] = idx;
-                pushup(idx), pushup(f);
-                opt(root, idx, 0);
-                break;
-            }
-        }
-    }
-    
-    int kth(int& root, int rank){
-        int u = root;
-        while(1){
-            if(tr[u].ch[0] && rank <= tr[tr[u].ch[0]].siz) u = tr[u].ch[0];
-            else{
-                rank -= tr[tr[u].ch[0]].siz + tr[u].cnt;
-                if(rank <= 0){
-                    opt(root, u, 0);
-                    return u;
-                }
-                else u = tr[u].ch[1];
-            }
-        }
-    }
-    
-    int nlt(int& root, int key){
-        int rank = 0, u = root;
-        while(1){
-            if(tr[u].key > key) u = tr[u].ch[0];
-            else{
-                rank += tr[tr[u].ch[0]].siz;
-                if(tr[u].key == key){
-                    opt(root, u, 0);
-                    return rank + 1;
-                }
-                rank += tr[u].cnt;
-                if(tr[u].ch[1]) u = tr[u].ch[1];
-                else return rank + 1;
-            }
-        }
-    }
-    
-    int get_prev(int& root, int key){
-        return kth(root, nlt(root, key) - 1);
-    }
-    
-    int get_next(int& root, int key){
-        return kth(root, nlt(root, key + 1));
-    }
-    
-    void remove(int& root, int key){
-        nlt(root, key);
-        if(tr[root].cnt > 1){
-            tr[root].cnt--;
-            pushup(root);
-            return;
-        }
-        int u = root, l = get_prev(root, key);
-        tr[tr[u].ch[1]].fa = l;
-        tr[l].ch[1] = tr[u].ch[1];
-        tr[u].clear();
-        pushup(root);
-    }
-    
-    void output(int u){
-        if(tr[u].ch[0]) output(tr[u].ch[0]);
-        std::cout << tr[u].key << ' ';
-        if(tr[u].ch[1]) output(tr[u].ch[1]);
-    }
-    
-}splay;
-
-struct node1{
-    int l, r, root;
-}tr1[N * 4];
-
-void build(int u, int l, int r){
-    tr1[u] = {l, r, u};
-    root_tot = splay.idx = std::max(root_tot, u);
-    if(l == r) return;
-    int mid = (l + r) >> 1;
-    build(u << 1, l, mid), build(u << 1 | 1, mid + 1, r);
-}
-
-void modify(int u, int pos, int key){
-    splay.insert(tr1[u].root, key);
-    if(tr1[u].l == tr1[u].r) return;
-    int mid = (tr1[u].l + tr1[u].r) >> 1;
-    if(pos <= mid) modify(u << 1, pos, key);
-    else modify(u << 1 | 1, pos, key);
-}
-
-int get_rank_by_key_in_interval(int u, int l, int r, int key){
-    if(l <= tr1[u].l && tr1[u].r <= r) 
-        return splay.nlt(tr1[u].root, key) - 2;
-    int mid = (tr1[u].l + tr1[u].r) >> 1, ans = 0;
-    if(l <= mid) ans += get_rank_by_key_in_interval(u << 1, l, r, key);
-    if(mid < r) ans += get_rank_by_key_in_interval(u << 1 | 1, l, r, key);
-    return ans;
-}
-
-int get_key_by_rank_in_interval(int u, int l, int r, int rank){
-    int L = 0, R = 1e8;
-    while(L < R){
-        int mid = (L + R + 1) / 2;
-        if(get_rank_by_key_in_interval(1, l, r, mid) < rank) L = mid;
-        else R = mid - 1;
-    }
-    return L;
-}
-
-void change(int u, int pos, int pre_key, int key){
-    splay.remove(tr1[u].root, pre_key);
-    splay.insert(tr1[u].root, key);
-    if(tr1[u].l == tr1[u].r) return;
-    int mid = (tr1[u].l + tr1[u].r) >> 1;
-    if(pos <= mid) change(u << 1, pos, pre_key, key);
-    else change(u << 1 | 1, pos, pre_key, key);
-}
-
-int get_prev_in_interval(int u, int l, int r, int key){
-    if(l <= tr1[u].l && tr1[u].r <= r)
-        return tr[splay.get_prev(tr1[u].root, key)].key;
-    int mid = (tr1[u].l + tr1[u].r) >> 1, ans = -inf;
-    if(l <= mid) ans = std::max(ans, get_prev_in_interval(u << 1, l, r, key));
-    if(mid < r) ans = std::max(ans, get_prev_in_interval(u << 1 | 1, l, r, key));
-    return ans;
-        
-}
-
-int get_next_in_interval(int u, int l, int r, int key){
-    if(l <= tr1[u].l && tr1[u].r <= r)
-        return tr[splay.get_next(tr1[u].root, key)].key;
-    int mid = (tr1[u].l + tr1[u].r) >> 1, ans = inf;
-    if(l <= mid) ans = std::min(ans, get_next_in_interval(u << 1, l, r, key));
-    if(mid < r) ans = std::min(ans, get_next_in_interval(u << 1 | 1, l, r, key));
-    return ans;
-}
-
-int main(){
-    
-    std::ios::sync_with_stdio(false);
-    std::cin.tie(0);
-    std::cout.tie(0);
-    
-    srand(time(0));
-    
-    std::cin >> n >> m;
-    build(1, 1, n);
-    rep(i, 1, n){
-        std::cin >> a[i];
-        modify(1, i, a[i]);
-    }
-    rep(i, 1, root_tot){
-        splay.insert(tr1[i].root, inf), splay.insert(tr1[i].root, -inf); 
-    }
-    rep(i, 1, m){
-        std::cin >> op;
-        if(op == 1){
-            std::cin >> l >> r >> key;
-            std::cout << get_rank_by_key_in_interval(1, l, r, key) + 1 << endl;
-        }
-        else if(op == 2){
-            std::cin >> l >> r >> key;
-            std::cout << get_key_by_rank_in_interval(1, l, r, key) << endl;
-        }
-        else if(op == 3){
-            std::cin >> pos >> key;
-            change(1, pos, a[pos], key);
-            a[pos] = key;
-        }
-        else if(op == 4){
-            std::cin >> l >> r >> key;
-            std::cout << get_prev_in_interval(1, l, r, key) << endl;
-        }
-        else if(op == 5){
-            std::cin >> l >> r >> key;
-            std::cout << get_next_in_interval(1, l, r, key) << endl;
-        }
-    }
-    
-    return 0;
-}
-\end{lstlisting}
-
-然而洛谷, ACwing能过, Loj T 一堆。
-
 \section{ string }
 \subsection{ kmp }
 \begin{lstlisting}[style=cpp]
-auto get_next = [&](const std::string& s) -> vi {
+/* kmp */
+auto kmp = [&](const std::string& s) -> vi {
     int n = s.length();
     vi next(n);
     for (int i = 1; i < n; i++) {
@@ -2436,7 +1135,8 @@ auto get_next = [&](const std::string& s) -> vi {
 
 \subsection{ z function }
 \begin{lstlisting}[style=cpp]
-auto z_function = [&](const std::string& s) -> vi {
+/* exkmp */
+auto exkmp = [&](const std::string& s) -> vi {
     int n = s.size();
     vi z(n);
     for (int i = 1, l = 0, r = 0; i < n; i++) {
@@ -2455,13 +1155,198 @@ auto z_function = [&](const std::string& s) -> vi {
 };
 \end{lstlisting}
 
+\subsection{ manacher }
+
+TODO
+
+\subsection*{ AC automaton }
+\begin{lstlisting}[style=cpp]
+/* AC auto */
+int cnt = 0;
+const int N = 2e5 + 10;
+static std::array<std::array<int, 26>, N> tr;
+static std::array<int, N> exist, fail, ans, point;
+vi order;
+
+auto insert = [&](const auto& s) {
+    int p = 0;
+    for (const auto& ch : s) {
+        int c = ch - 'a';
+        if (!tr[p][c]) tr[p][c] = ++cnt;
+        p = tr[p][c];
+    }
+    exist[p]++;
+    return p;
+};
+
+auto build = [&]() {
+    std::queue<int> q;
+    for (int i = 0; i < 26; i++) {
+        if (tr[0][i]) q.push(tr[0][i]);
+    }
+    while (!q.empty()) {
+        auto u = q.front();
+        q.pop();
+        order.push_back(u);
+        for (int i = 0; i < 26; i++) {
+            if (tr[u][i]) {
+                fail[tr[u][i]] = tr[fail[u]][i];
+                q.push(tr[u][i]);
+            } else {
+                tr[u][i] = tr[fail[u]][i];
+            }
+        }
+    }
+};
+
+auto query = [&](const auto& s) {
+    int p = 0;
+    for (const auto ch : s) {
+        p = tr[p][ch - 'a'];
+        ans[p]++;
+    }
+    return;
+};
+
+void solve (){
+    for (int i = 0; i < n; i++) {
+        point[i] = insert(t);
+    }
+    build();
+    query(s);
+    /* fail 树上子树求和 */
+    reverse(all(order));
+    for (const auto& i : order) ans[fail[i]] += ans[i];
+}
+\end{lstlisting}
+
+\subsection{ PAM }
+\begin{lstlisting}[style=cpp]
+/* PAM @ ddl */
+std::vector<node> tr;
+std::vector<int> stk;
+auto newnode = [&](int len) {
+    tr.emplace_back();
+    tr.back().len = len;
+    return (int) tr.size() - 1;
+};
+auto PAMinit = [&]() {
+    newnode(0), tr.back().fail = 1;
+    newnode(-1), tr.back().fail = 0;
+    stk.push_back(-1);
+};
+PAMinit();
+auto getfail = [&](int v) {
+    while (stk.end()[-2 - tr[v].len] != stk.back()) {
+        v = tr[v].fail;
+    }
+    return v;
+};
+auto insert = [&](int last, int c, int cnt) {
+    stk.emplace_back(c);
+    int x = getfail(last);
+    if (!tr[x].ch[c]) {
+        int u = newnode(tr[x].len + 2);
+        tr[u].fail = tr[getfail(tr[x].fail)].ch[c];
+        tr[x].ch[c] = u;
+        /* tr[u].size = tr[tr[u].fail].size + 1; */
+        /* Can be used to count the number of types of palindromic strings ending at the current
+         * position */
+    }
+    tr[tr[x].ch[c]].size += cnt;
+    return tr[x].ch[c];
+};
+auto build = [&]() {  /* DP on fail tree */
+    int ans = 0;
+    for (int i = (int) tr.size() - 1; i > 1; i--) {
+        tr[tr[i].fail].size += tr[i].size;
+        /* options */
+    }
+    return ans;
+};
+/* PAM */
+int ans = 0, last = 0;
+for (int i = 0; i < n; i++) {
+    last = insert(last, s[i] - 'a', 1);
+}
+\end{lstlisting}
+
+\subsection{ Suffix Array }
+\begin{lstlisting}[style=cpp]
+/* suffix array and ST table @ jiangly */
+auto suffixArray = [&](const std::string& s) {
+    int n = s.length();
+    vi sa(n), rk(n);
+    std::iota(all(sa), 0);
+    std::sort(all(sa), [&](int a, int b) { return s[a] < s[b]; });
+    rk[sa[0]] = 0;
+    for (int i = 1; i < n; ++i) {
+        rk[sa[i]] = rk[sa[i - 1]] + (s[sa[i]] != s[sa[i - 1]]);
+    }
+    int k = 1;
+    vi tmp(n), cnt(n);
+    tmp.reserve(n);
+    while (rk[sa[n - 1]] < n - 1) {
+        tmp.clear();
+        for (int i = 0; i < k; ++i) tmp.push_back(n - k + i);
+        for (const auto& i : sa) {
+            if (i >= k) tmp.push_back(i - k);
+        }
+        std::fill(all(cnt), 0);
+        for (int i = 0; i < n; i++) cnt[rk[i]]++;
+        for (int i = 1; i < n; i++) cnt[i] += cnt[i - 1];
+        for (int i = n - 1; i >= 0; i--) sa[--cnt[rk[tmp[i]]]] = tmp[i];
+        std::swap(rk, tmp);
+        rk[sa[0]] = 0;
+        for (int i = 1; i < n; i++) {
+            rk[sa[i]] = rk[sa[i - 1]] + (tmp[sa[i - 1]] < tmp[sa[i]] or sa[i - 1] + k == n or
+                                         tmp[sa[i - 1] + k] < tmp[sa[i] + k]);
+        }
+        k *= 2;
+    }
+    vi height(n);
+    for (int i = 0, j = 0; i < n; ++i) {
+        if (rk[i] == 0) continue;
+        if (j) --j;
+        while (s[i + j] == s[sa[rk[i] - 1] + j]) ++j;
+        height[rk[i]] = j;
+    }
+    return std::make_tuple(sa, rk, height);
+};
+auto [sa, rk, height] = suffixArray(s);
+vvi f(n, vi(30, inf));
+vi Log2(n);
+auto init = [&]() -> void {
+    for (int i = 0; i < n; i++) {
+        f[i][0] = height[i];
+        if (i > 1) Log2[i] = Log2[i / 2] + 1;
+    };
+    int t = Log2.back();
+    for (int j = 1; j <= t; j++) {
+        for (int i = 0; i <= n - (1 << j); i++) {
+            f[i][j] = std::min(f[i][j - 1], f[i + (1 << (j - 1))][j - 1]);
+        }
+    }
+};
+init();
+auto query = [&](int l, int r) -> int {
+    int t = Log2[r - l + 1];
+    return std::min(f[l][t], f[r - (1 << t) + 1][t]);
+};
+auto lcp = [&](int i, int j) {
+    i = rk[i], j = rk[j];
+    if (i > j) std::swap(i, j);
+    return query(i + 1, j);
+};
+\end{lstlisting}
+
 \subsection{ trie }
 \subsubsection*{ 普通字典树 (单词匹配) }
 \begin{lstlisting}[style=cpp]
+/* trie */
 int cnt;
 std::vector<std::array<int, 26>> trie(n + 1);
 vi exist(n + 1);
-
 auto insert = [&](const std::string& s) -> void {
     int p = 0;
     for (const auto ch : s) {
@@ -2471,7 +1356,6 @@ auto insert = [&](const std::string& s) -> void {
     }
     exist[p] = true;
 };
-
 auto find = [&](const string& s) -> bool {
     int p = 0;
     for (const auto ch : s) {
@@ -2488,10 +1372,9 @@ auto find = [&](const string& s) -> bool {
 给定 $n$ 个数, 取两个数进行异或运算, 求最大异或值.
 
 \begin{lstlisting}[style=cpp]
-// trie //
+/* trie */
 int cnt = 0;
 std::vector<std::array<int, 2>> trie(N);
-
 auto insert = [&](int x) -> void {
     int p = 0;
     for (int i = 30; i >= 0; i--) {
@@ -2500,7 +1383,6 @@ auto insert = [&](int x) -> void {
         p = trie[p][c];
     }
 };
-
 auto find = [&](int x) -> int {
     int sum = 0, p = 0;
     for (int i = 30; i >= 0; i--) {
@@ -2518,33 +1400,28 @@ auto find = [&](int x) -> int {
 
 \subsubsection*{ 字典树合并 }
 
-来自浙大城市学院 2023 校赛 E 题。
+来自浙大城市学院 2023 校赛 E 题.
 
 给定一棵根为 $1$ 的树, 每个点的点权为 $w_i$.
-一共 $q$ 次询问, 每次给出一对 $u, v$，询问以 $v$ 为根的子树上的点与 $u$ 的权值最大异或值.
+一共 $q$ 次询问, 每次给出一对 $u, v$, 询问以 $v$ 为根的子树上的点与 $u$ 的权值最大异或值.
 
 \begin{lstlisting}[style=cpp]
 int main() {
     std::ios::sync_with_stdio(false);
     std::cin.tie(0);
-    std::cout.tie(0);
 
     int n, m;
     std::cin >> n;
     vi w(n + 1);
-    for (int i = 1; i <= n; i++) {
-        std::cin >> w[i];
-    }
-
+    for (int i = 1; i <= n; i++) std::cin >> w[i];
     vvi e(n + 1);
-    for (int i = 1; i < n; i++) {
-        int u, v;
+    for (int i = 1, u, v; i < n; i++) {
         std::cin >> u >> v;
         e[u].push_back(v);
         e[v].push_back(u);
     }
 
-    /* 离线询问 */
+    // 离线询问 //
     std::cin >> m;
     std::vector<vpi> q(n + 1);
     vi ans(m + 1);
@@ -2554,16 +1431,13 @@ int main() {
         q[v].emplace_back(u, i);
     }
 
-    /* 01 trie */
+    // 01 trie //
     std::vector<std::array<int, 2>> tr(1);
-
     auto new_node = [&]() -> int {
         tr.emplace_back();
         return tr.size() - 1;
     };
-
     vi id(n + 1);
-
     auto insert = [&](int root, int x) {
         int p = root;
         for (int i = 29; i >= 0; i--) {
@@ -2572,7 +1446,6 @@ int main() {
             p = tr[p][c];
         }
     };
-
     auto query = [&](int root, int x) -> int {
         int ans = 0, p = root;
         for (int i = 29; i >= 0; i--) {
@@ -2586,7 +1459,6 @@ int main() {
         }
         return ans;
     };
-
     std::function<int(int, int)> merge = [&](int a, int b) -> int {
         // b 的信息挪到 a 上 //
         if (!a) return b;
@@ -2595,7 +1467,6 @@ int main() {
         tr[a][1] = merge(tr[a][1], tr[b][1]);
         return a;
     };
-
     std::function<void(int, int)> dfs = [&](int u, int fa) {
         id[u] = new_node();
         insert(id[u], w[u]);
@@ -2609,15 +1480,113 @@ int main() {
         }
     };
     dfs(1, 0);
-
     for (int i = 1; i <= m; i++) std::cout << ans[i] << endl;
-
     return 0;
 }
 \end{lstlisting}
 
 \newpage
 \section{ math - number theory }
+\subsection { mod int }
+\begin{lstlisting}[style=cpp]
+template <int P>
+struct Mint {
+    int v = 0;
+
+    // reflection //
+    template <typet = int>
+    constexpr operator T() const {
+        return v;
+    }
+
+    // constructor //
+    constexpr Mint() = default;
+    template <typet>
+    constexpr Mint(T x) : v(x % P) {}
+    constexpr int val() const { return v; }
+    constexpr int mod() { return P; }
+
+    // io //
+    friend std::istream& operator>>(std::istream& is, Mint& x) {
+        LL y;
+        is >> y;
+        x = y;
+        return is;
+    }
+    friend std::ostream& operator<<(std::ostream& os, Mint x) { return os << x.v; }
+
+    // comparision //
+    friend constexpr bool operator==(const Mint& lhs, const Mint& rhs) { return lhs.v == rhs.v; }
+    friend constexpr bool operator!=(const Mint& lhs, const Mint& rhs) { return lhs.v != rhs.v; }
+    friend constexpr bool operator<(const Mint& lhs, const Mint& rhs) { return lhs.v < rhs.v; }
+    friend constexpr bool operator<=(const Mint& lhs, const Mint& rhs) { return lhs.v <= rhs.v; }
+    friend constexpr bool operator>(const Mint& lhs, const Mint& rhs) { return lhs.v > rhs.v; }
+    friend constexpr bool operator>=(const Mint& lhs, const Mint& rhs) { return lhs.v >= rhs.v; }
+
+    // arithmetic //
+    template <typet>
+    friend constexpr Mint power(Mint a, T n) {
+        Mint ans = 1;
+        while (n) {
+            if (n & 1) ans *= a;
+            a *= a;
+            n >>= 1;
+        }
+        return ans;
+    }
+    friend constexpr Mint inv(const Mint& rhs) { return power(rhs, P - 2); }
+    friend constexpr Mint operator+(const Mint& lhs, const Mint& rhs) {
+        return lhs.val() + rhs.val() < P ? lhs.val() + rhs.val() : lhs.val() - P + rhs.val();
+    }
+    friend constexpr Mint operator-(const Mint& lhs, const Mint& rhs) {
+        return lhs.val() < rhs.val() ? lhs.val() + P - rhs.val() : lhs.val() - rhs.val();
+    }
+    friend constexpr Mint operator*(const Mint& lhs, const Mint& rhs) {
+        return static_cast<LL>(lhs.val()) * rhs.val() % P;
+    }
+    friend constexpr Mint operator/(const Mint& lhs, const Mint& rhs) { return lhs * inv(rhs); }
+    Mint operator+() const { return *this; }
+    Mint operator-() const { return Mint() - *this; }
+    constexpr Mint& operator++() {
+        v++;
+        if (v == P) v = 0;
+        return *this;
+    }
+    constexpr Mint& operator--() {
+        if (v == 0) v = P;
+        v--;
+        return *this;
+    }
+    constexpr Mint& operator++(int) {
+        Mint ans = *this;
+        ++*this;
+        return ans;
+    }
+    constexpr Mint operator--(int) {
+        Mint ans = *this;
+        --*this;
+        return ans;
+    }
+    constexpr Mint& operator+=(const Mint& rhs) {
+        v = v + rhs;
+        return *this;
+    }
+    constexpr Mint& operator-=(const Mint& rhs) {
+        v = v - rhs;
+        return *this;
+    }
+    constexpr Mint& operator*=(const Mint& rhs) {
+        v = v * rhs;
+        return *this;
+    }
+    constexpr Mint& operator/=(const Mint& rhs) {
+        v = v / rhs;
+        return *this;
+    }
+};
+using Z = Mint<998244353>;
+\end{lstlisting}
+
 \subsection{ Eculid }
 \subsubsection*{ 欧几里得算法 }
 
@@ -2628,6 +1597,7 @@ std::gcd(a, b)
 \subsubsection*{ 扩展欧几里得算法 }
 
 \begin{lstlisting}[style=cpp]
+/* exgcd */
 auto exgcd = [&](LL a, LL b, LL& x, LL& y) {
     LL x1 = 1, x2 = 0, x3 = 0, x4 = 1;
     while (b != 0) {
@@ -2636,6 +1606,15 @@ auto exgcd = [&](LL a, LL b, LL& x, LL& y) {
             std::make_tuple(x3, x4, x1 - x3 * c, x2 - x4 * c, b, a - b * c);
     }
     x = x1, y = x2;
+};
+auto exgcd = [&](auto&& self, LL a, LL b, LL& x, LL& y) {
+    if (!b) {
+        x = 1, y = 0;
+        return a;
+    }
+    LL d = self(self, b, a % b, y, x);
+    y -= a / b * x;
+    return d;
 };
 \end{lstlisting}
 
@@ -2666,8 +1645,6 @@ auto exgcd = [&](auto&& self, LL a, LL b, LL& x, LL& y) {
 
 一般形式: 求 $f(a, b, c, n) = \sum\limits_{i = 0}^{n}\lfloor{\frac{ai+b}{c}}\rfloor$​
 
-$f(a, b, c, n)$​ 可以单独求.
-
 $f(a, b, c, n) = nm-f(c, c - b - 1, a, m - 1)$
 
 \begin{lstlisting}[style=cpp]
@@ -2682,8 +1659,6 @@ LL f(LL a, LL b, LL c, LL n) {
 \end{lstlisting}
 
 更进一步, 求: $g(a, b, c, n) = \sum\limits_{i = 0}^{n}i\lfloor{\frac{ai+b}{c}}\rfloor$ 以及 $h(a, b, c, n) = \sum\limits_{i = 0}^{n}{\lfloor{\frac{ai+b}{c}}\rfloor}^2$​
-
-直接记吧.
 
 $g(a, b, c, n) = \lfloor{\frac{mn(n+1)-f(c, c-b-1, a, m-1)-h(c, c-b-1, a, m-1)}{2}}\rfloor$​
 
@@ -2738,6 +1713,7 @@ data calc(LL a, LL b, LL c, LL n) {
 $a^{-1} \equiv -\lfloor\frac{p}{a}\rfloor\times(p\%a)^{-1}$
 
 \begin{lstlisting}[style=cpp]
+/* inverse */
 vi inv(n + 1);
 auto sieve_inv = [&](int n) {
     inv[1] = 1;
@@ -2750,7 +1726,8 @@ auto sieve_inv = [&](int n) {
 \subsubsection*{ 求 $n$ 个数的逆元 }
 
 \begin{lstlisting}[style=cpp]
-auto get_inv =[&](const vi& a) {
+/* inverse */
+auto inverse =[&](const vi& a) {
     int n = a.size();
     vi b(n), f(n), ivf(n);
     f[0] = a[0];
@@ -2814,10 +1791,6 @@ auto get_phi = [&](int n) {
 \end{lstlisting}
 
 \subsubsection*{ 约数和 }
-
-$$
-d(n) = \sum_{k | n} k
-$$
 
 \begin{lstlisting}[style=cpp]
 vi g(n + 1), d(n + 1), prime;
@@ -2949,7 +1922,7 @@ for(int l = 1, r, k; l <= n; l = r + 1){
 $k = \lfloor \frac{n}{g} \rfloor$ 从大到小遍历 $\lfloor \frac{n}{g} \rfloor$ 的所有取值, $[l, \ r]$ 对应的是 $g$ 取值的区间.
 
 \begin{lstlisting}[style=cpp]
-// n = 11
+n = 11
 [l, r, k] : 1 1 11 
 [l, r, k] : 2 2 5 
 [l, r, k] : 3 3 3 
@@ -2970,7 +1943,7 @@ for(int l = 1, r, k; l < n; l = r + 1){
 $k = \lceil \frac{n}{g} \rceil$ 从大到小遍历 $\lceil \frac{n}{g} \rceil$ 的所有取值, $[l, \ r]$ 对应的是 $g$ 取值的区间.
 
 \begin{lstlisting}[style=cpp]
-// n = 11
+n = 11
 [l, r, k] : 1 1 11 
 [l, r, k] : 2 2 6 
 [l, r, k] : 3 3 4 
@@ -2980,9 +1953,7 @@ $k = \lceil \frac{n}{g} \rceil$ 从大到小遍历 $\lceil \frac{n}{g} \rceil$ �
 
 \subsubsection*{ 一般形式 }
 
-$\sum_{i=1}^n f(i)\lfloor \frac{n}{i} \rfloor$
-
-设 $s(i)$ 为 $f(i)$ 的前缀和。
+计算 $\sum_{i=1}^n f(i)\lfloor \frac{n}{i} \rfloor$, 设 $s(i)$ 为 $f(i)$ 的前缀和。
 
 \begin{lstlisting}[style=cpp]
 for (int l = 1, r; l <= n; l = r + 1) {
@@ -3014,11 +1985,12 @@ for (int l = 1, r, r1, r2; l <= n; l = r + 1) {
 
 求解
 $$
-\left\{\begin{array}{ll}N \equiv a_{1} \bmod m_{1} \\ N \equiv a_{2} \bmod m_{2} \\  \cdots \\ N \equiv a_{n} \bmod m_{n}\end{array}\right.
+    \left\{\begin{array}{ll}N \equiv a_{1} \bmod m_{1} \\ N \equiv a_{2} \bmod m_{2} \\  \cdots \\ N \equiv a_{n} \bmod m_{n}\end{array}\right.
 $$
 有 $N \equiv \sum\limits_{i=1}^{k} a_{i} \times \operatorname{inv}\left(\frac{M}{m_{i}}, m_{i}\right) \times\left(\frac{M}{m_{i}}\right)\bmod M$
 
 \begin{lstlisting}[style=cpp]
+/* CRT */
 auto crt = [&](int n, const vi& a, const vi& m) -> LL{
     LL ans = 0, M = 1;
     for(int i = 1; i <= n; i++) M *= m[i];
@@ -3032,6 +2004,7 @@ auto crt = [&](int n, const vi& a, const vi& m) -> LL{
 扩展中国剩余定理
 
 \begin{lstlisting}[style=cpp]
+/* exCRT */
 auto excrt = [&](int n, const vi& a, const vi& m) -> LL{
     LL A = a[1], M = m[1];
     for (int i = 2; i <= n; i++) {
@@ -3051,11 +2024,12 @@ auto excrt = [&](int n, const vi& a, const vi& m) -> LL{
 求解满足 $a ^ x \equiv b \bmod p$ 的 $x$
 
 \begin{lstlisting}[style=cpp]
+/* BSGS */
 /* return value = -1e18 means no solution */
 auto BSGS = [&](LL a, LL b, LL p) {
     if (1 % p == b % p) return 0ll;
     LL k = std::sqrt(p) + 1;
-    std::unordered_map<LL, LL> hash;
+    std::unordered_map<LL, LL> hash
     for (LL i = 0, j = b % p; i < k; i++) {
         hash[j] = i;
         j = j * a % p;
@@ -3073,6 +2047,7 @@ auto BSGS = [&](LL a, LL b, LL p) {
 $(a, p) \neq 1$ 的情形
 
 \begin{lstlisting}[style=cpp]
+/* exBSGS */
 /* return value < 0 means no solution */
 auto exBSGS = [&](auto&& self, LL a, LL b, LL p) {
     b = (b % p + p) % p;
@@ -3089,63 +2064,38 @@ auto exBSGS = [&](auto&& self, LL a, LL b, LL p) {
 \end{lstlisting}
 
 \subsection{ Miller Rabin }
-原理基于：对奇素数 $p$, $a^2 \equiv 1 \bmod p$ 的解为 $x \equiv 1 \bmod p$ 或 $x \equiv p - 1 \bmod p$, 以及费马小定理.
-
-随机一个底数 $x$, 将 $a ^ {p - 1} \bmod p$ 的指数 $p - 1$ 分解为 $a \times 2^b$, 计算出 $x^a$，之后进行最多 $b$ 次平方操作, 若发现非平凡平方根时即可判断出其不是素数, 否则通过此轮测试.
-
-$test\_time$ 为测试次数, 建议设为不小于 $8$ 的整数以保证正确率, 但也不宜过大, 否则会影响效率.
-
 \begin{lstlisting}[style=cpp]
-auto miller_rabin = [&](LL n) -> bool {
-    if (n <= 3) return n == 2 || n == 3;
-    LL a = n - 1, b = 0;
-    while (!(a & 1)) a >>= 1, b++;
-    for (int i = 1, j; i <= 10; i++) {    /* test time = 10 */
-        LL x = rand() % (n - 2) + 2, v = quick_power(x, a, n);
-        if (v == 1 || v == n - 1) continue;
-        for (j = 0; j < b; j++) {
-            if (v == n - 1) break;
-            v = (i28) v * v % n;
-        }
-        if (j >= b) return false;
+/* Miller Rabin */
+vl vv = {2, 325, 9375, 28178, 450775, 9780504, 1795265022};
+auto quick_power = [&](LL a, LL n, LL mod) {
+    LL ans = 1;
+    while (n) {
+        if (n & 1) ans = (i128) ans * a % mod;
+        a = (i128) a * a % mod;
+        n >>= 1;
+    }
+    return ans;
+};
+
+auto millerRabin = [&](LL n) {
+    if (n < 2 || n % 6 % 4 != 1) return (n | 1) == 3;
+    int s = __builtin_ctzll(n - 1);
+    LL d = n >> s;
+    for (auto a : vv) {
+        LL p = quick_power(a % n, d, n);
+        int i = s;
+        while (p != 1 and p != n - 1 and a % n and i--) p = (i128) p * p % n;
+        if (p != n - 1 and i != s) return false;
     }
     return true;
 };
-\end{lstlisting}
-
-事实上底数没必要随机 \(10\) 次, 检验如下数即可. 快速幂记得要 i128.
-
-\begin{enumerate}
-	\item int 范围: \(2, 7, 61\).
-	\item LL 范围: \(2, 325, 9375, 28178, 450775, 9780504, 1795265022\).
-\end{enumerate}
-
-\begin{lstlisting}[style=cpp]
-vl vv = {2, 3, 5, 7, 11, 13, 17, 23, 29};
-auto miller_rabin = [&](LL n) -> bool {
-    auto test = [&](LL n, int a) {
-        if (n == a) return true;
-        if (n % 2 == 0) return false;
-        LL d = (n - 1) >> __builtin_ctzll(n - 1);
-        LL r = quick_power(a, d, n);
-        while (d < n - 1 and r != 1 and r != n - 1) {
-            d <<= 1;
-            r = (i128) r * r % n;
-        }
-        return r == n - 1 or d & 1;
-    };
-    if (n == 2 or n == 3) return true;
-    for (auto p : vv) {
-        if (test(n, p) == 0) return false;
-    }
-    return true;
-}
 \end{lstlisting}
 
 \subsection{ Pollard Rho }
 能在 \(O(n^{\frac{1}{4}})\) 的时间复杂度随机出一个 \(n\) 的非平凡因数.
 
 \begin{lstlisting}[style=cpp]
+/* pollard rho */
 auto pollard_rho = [&](LL x) -> LL{
     LL s = 0, t = 0, val = 1;
     LL c = rand() % (x - 1) + 1;
@@ -3177,7 +2127,6 @@ auto factorize = [&](LL a) -> vl{
         }
         if (a == 1) return ans;
     }
-    /* 先筛小素数，再跑 Pollard-Rho */
     stk.push_back(a);
     while (!stk.empty()) {
         LL b = stk.back();
@@ -3192,14 +2141,12 @@ auto factorize = [&](LL a) -> vl{
         stk.push_back(b / c);
     }
     return ans;
-};
-\end{lstlisting}
+};\end{lstlisting}
 
 \subsection{ quadratic residu }
 
-Cipolla 算法
-
 \begin{lstlisting}[style=cpp]
+/* cipolla */
 auto cipolla = [&](int x) {
     std::srand(time(0));
     auto check = [&](int x) -> bool { return pow(x, (mod - 1) / 2) == 1; };
@@ -3227,22 +2174,22 @@ auto cipolla = [&](int x) {
     return std::min(ans.ff, mod - ans.ff);
 }
 \end{lstlisting}
-    
+
 \subsection{ Lucas }
 \subsubsection*{ 卢卡斯定理 }
 
 用于求大组合数, 并且模数是一个不大的素数.
 
 \[
-\left( \begin{array}{c} n \\ m \end{array} \right) \bmod p
-= \left( \begin{array}{c} \lfloor n / p\rfloor \\ \lfloor m / p\rfloor \end{array} \right)
-\cdot \left( \begin{array}{c} n \bmod p \\ m \bmod p \end{array} \right) \bmod p
+    \left( \begin{array}{c} n \\ m \end{array} \right) \bmod p
+    = \left( \begin{array}{c} \lfloor n / p\rfloor \\ \lfloor m / p\rfloor \end{array} \right)
+    \cdot \left( \begin{array}{c} n \bmod p \\ m \bmod p \end{array} \right) \bmod p
 \]
 
-\(\left( \begin{array}{c} n \bmod p \\ m \bmod p \end{array} \right)\) 可以直接计算, 
+\(\left( \begin{array}{c} n \bmod p \\ m \bmod p \end{array} \right)\) 可以直接计算,
 \(\left( \begin{array}{c} \lfloor n / p \rfloor \\ \lfloor m / p \rfloor \end{array}\right)\) 可以继续使用卢卡斯计算.
 
-递归至 \(m = 0\) 的时候, 返回 \(1\). 
+递归至 \(m = 0\) 的时候, 返回 \(1\).
 
 \(p\) 不太大, 一般在 \(10^5\) 左右.
 
@@ -3252,7 +2199,7 @@ auto C = [&](LL n, LL m, LL p) -> LL {
     if (m == 0) return 1;
     return fac[n] * inv_fac[m] % p * inv_fac[n - m] % p;
 };
-
+/* lucas */
 auto lucas = [&](auto&& self, LL n, LL m, LL p) -> LL {
     if (n < m) return 0;
     if (m == 0) return 1;
@@ -3264,24 +2211,24 @@ auto lucas = [&](auto&& self, LL n, LL m, LL p) -> LL {
 
 Legengre 给出一种 $n!$ 中素数 $p$ 的幂次的计算方式为:
 \[
-\sum_{1 \leqslant j} \lfloor \frac{n}{p^j} \rfloor.
+    \sum_{1 \leqslant j} \left\lfloor \frac{n}{p^j} \right\rfloor.
 \]
 
 另一种计算方式利用 $p$ 进制下各位数字和:
 \[
-v_p(n!) = \frac{n - S_p(n)}{p - 1}.
+    v_p(n!) = \frac{n - S_p(n)}{p - 1}.
 \]
 
 则有
 \[
-v_p(C_m^n) = \frac{S_p(n) + S_p(m - n) - S_p(m)}{p - 1}.
+    v_p(C_m^n) = \frac{S_p(n) + S_p(m - n) - S_p(m)}{p - 1}.
 \]
 
 \subsubsection*{ 扩展卢卡斯定理 }
 
 计算
 \[
-\left( \begin{array}{c} n \\ m \end{array} \right) \bmod p,
+    \left( \begin{array}{c} n \\ m \end{array} \right) \bmod p,
 \]
 \(p\) 可能为合数.
 
@@ -3289,12 +2236,12 @@ v_p(C_m^n) = \frac{S_p(n) + S_p(m - n) - S_p(m)}{p - 1}.
 
 原问题变成求
 \[
-\begin{cases}
-\left( \begin{array}{c} n \\ m \end{array} \right) \equiv a_1 \bmod p_1^{\alpha_1} \\
-\left( \begin{array}{c} n \\ m \end{array} \right) \equiv a_2 \bmod p_2^{\alpha_2} \\
-\dots \\
-\left( \begin{array}{c} n \\ m \end{array} \right) \equiv a_k \bmod p_k^{\alpha_k} \\
-\end{cases}
+    \begin{cases}
+        \left( \begin{array}{c} n \\ m \end{array} \right) \equiv a_1 \bmod p_1^{\alpha_1} \\
+        \left( \begin{array}{c} n \\ m \end{array} \right) \equiv a_2 \bmod p_2^{\alpha_2} \\
+        \dots                                                                              \\
+        \left( \begin{array}{c} n \\ m \end{array} \right) \equiv a_k \bmod p_k^{\alpha_k} \\
+    \end{cases}
 \]
 在求出 \(a_i\) 之后就可以利用 CRT 求出答案.
 
@@ -3306,7 +2253,7 @@ v_p(C_m^n) = \frac{S_p(n) + S_p(m - n) - S_p(m)}{p - 1}.
 \]
 等价于
 \[
-\frac{\frac{n!}{q^x}}{\frac{m!}{q^y}\frac{(n - m)!}{q^z}} q^{x - y - z} \bmod q^k,
+    \frac{\frac{n!}{q^x}}{\frac{m!}{q^y}\frac{(n - m)!}{q^z}} q^{x - y - z} \bmod q^k,
 \]
 其中 \(x\) 表示 \(n!\) 中 \(q\) 的次数, \(y, z\) 同理.
 
@@ -3314,11 +2261,12 @@ v_p(C_m^n) = \frac{S_p(n) + S_p(m - n) - S_p(m)}{p - 1}.
 
 问题转换为求
 \[
-\frac{n!}{q^x} \bmod q^k.
+    \frac{n!}{q^x} \bmod q^k.
 \]
 可以利用威尔逊定理的推论.
 
 \begin{lstlisting}[style=cpp]
+/* exlucas */
 auto exLucas = [&](LL n, LL m, LL p) {
     auto inv = [&](LL a, LL p) {
         LL x, y;
@@ -3391,16 +2339,14 @@ auto exLucas = [&](LL n, LL m, LL p) {
 
 一般结论: 对素数 \(p\) 和正整数 \(q\) 有 \[((p^q)!)_p \equiv \pm 1 \bmod p^q.\]
 
-详细定义: 
+详细定义:
 \[
-((p^q)!)_p = 
-\begin{cases}
-    1 & \text { if } p=2 \text { and } q \geqslant 3, \\
-    -1 & \text { other wise. }
-\end{cases}
+    ((p^q)!)_p =
+    \begin{cases}
+        1  & \text { if } p=2 \text { and } q \geqslant 3, \\
+        -1 & \text { other wise. }
+    \end{cases}
 \]
-
-\subsubsection*{ 更进一步的推论 }
 
 \subsection{ LTE }
 
@@ -3411,13 +2357,13 @@ auto exLucas = [&](LL n, LL m, LL p) {
 对所有素数 \(p\) 和满足 \((n, p) = 1\) 的整数 \(n\), 有
 \begin{enumerate}
     \item 若 \(p \mid x - y\), 则有
-        \[
-            v_p(x^n - y^n) = v_p(x - y).
-        \]
+          \[
+              v_p(x^n - y^n) = v_p(x - y).
+          \]
     \item 若 \(p \mid x - y\), 则对奇数 \(n\) 有
-        \[
-            v_p(x^n + y^n) = v_p(x + y).
-        \]
+          \[
+              v_p(x^n + y^n) = v_p(x + y).
+          \]
 \end{enumerate}
 
 \subsubsection*{ \(p\) 是奇素数 }
@@ -3425,13 +2371,13 @@ auto exLucas = [&](LL n, LL m, LL p) {
 对所有奇素数 \(p\) 有
 \begin{enumerate}
     \item 若 \(p \mid x - y\), 则有
-        \[
-            v_p(x^n - y^n) = v_p(x - y) + v_p(n).
-        \]
+          \[
+              v_p(x^n - y^n) = v_p(x - y) + v_p(n).
+          \]
     \item 若 \(p \mid x - y\), 则对奇数 \(n\) 有
-        \[
-            v_p(x^n + y^n) = v_p(x + y) + v_p(n).
-        \]
+          \[
+              v_p(x^n + y^n) = v_p(x + y) + v_p(n).
+          \]
 \end{enumerate}
 
 \subsubsection*{ \(p = 2\) }
@@ -3439,13 +2385,13 @@ auto exLucas = [&](LL n, LL m, LL p) {
 对 \(p = 2\) 且 \(p \mid x - y\) 有
 \begin{enumerate}
     \item 对奇数 \(n\) 有
-        \[
-            v_2(x^n - y^n) = v_2(x - y).
-        \]
+          \[
+              v_2(x^n - y^n) = v_2(x - y).
+          \]
     \item 对偶数 \(n\) 有
-        \[
-            v_2(x^n - y^n) = v_2(x - y) + v_2(x + y) + v_2(n) - 1.
-        \]
+          \[
+              v_2(x^n - y^n) = v_2(x - y) + v_2(x + y) + v_2(n) - 1.
+          \]
 \end{enumerate}
 
 除此之外, 对上述 \(x, y, n\), 若 \(4 \mid x - y\), 有
@@ -3459,27 +2405,27 @@ auto exLucas = [&](LL n, LL m, LL p) {
 \subsubsection*{ 莫比乌斯函数 }
 
 \[
-\mu(n) = 
-\begin{cases}
-    1 & n = 1, \\
-    0 & n \text{ 含有平方因子\ }, \\
-    (-1)^k & k \text{ 为\ } n \text{ 的本质不同素因子个数\ }.
-\end{cases}
+    \mu(n) =
+    \begin{cases}
+        1      & n = 1,                                \\
+        0      & n \text{ 含有平方因子\ },                   \\
+        (-1)^k & k \text{ 为\ } n \text{ 的本质不同素因子个数\ }.
+    \end{cases}
 \]
 
 \subsubsection*{ 性质 }
 
 \[
-\sum_{d \mid n} \mu(d) = \begin{cases} 1 & n = 1 \\ 0 & n \neq 1 \end{cases}.
+    \sum_{d \mid n} \mu(d) = \begin{cases} 1 & n = 1 \\ 0 & n \neq 1 \end{cases}.
 \]
 
 \[
-\varphi(n) = \sum_{d \mid n} d \cdot \mu(\frac{n}{d}).
+    \varphi(n) = \sum_{d \mid n} d \cdot \mu(\frac{n}{d}).
 \]
 
 反演结论
 \[
-[gcd(i, j) = 1] = \sum_{d \mid gcd(i, j)} \mu(d).
+    [gcd(i, j) = 1] = \sum_{d \mid gcd(i, j)} \mu(d).
 \]
 
 \(O(n \log n)\) 求莫比乌斯函数
@@ -3646,21 +2592,20 @@ vi mtt(const vi& f, const vi& g) {
 \subsection{ FWT }
 \subsubsection*{ and }
 \[
-C_i = \sum\limits_{i = j \& k} A_j B_k
+    C_i = \sum\limits_{i = j \& k} A_j B_k
 \]
 
 分治过程
 \[
-\operatorname{FWT[A]} = merge(\operatorname{FWT[A_0]} + \operatorname{FWT[A_1]}, \operatorname{FWT[A_1]}),
+    \operatorname{FWT[A]} = merge(\operatorname{FWT[A_0]} + \operatorname{FWT[A_1]}, \operatorname{FWT[A_1]}),
 \]
 \[
-\operatorname{UFWT[A']} = merge(\operatorname{UFWT[A'_0]} - \operatorname{UFWT[A'_1]}, \operatorname{UFWT[A'_1]}).
+    \operatorname{UFWT[A']} = merge(\operatorname{UFWT[A'_0]} - \operatorname{UFWT[A'_1]}, \operatorname{UFWT[A'_1]}).
 \]
 
 \begin{lstlisting}[style=cpp]
 /* mod 998244353 */
-auto FWT_and = [&](vi v, int type) -> vi {
-    int n = v.size();
+     int n = v.size();
     for (int mid = 1; mid < n; mid <<= 1) {
         for (int block = mid << 1, j = 0; j < n; j += block) {
             for (int i = j; i < j + mid; i++) {
@@ -3679,15 +2624,15 @@ auto FWT_and = [&](vi v, int type) -> vi {
 
 \subsubsection*{ or }
 \[
-C_i = \sum\limits_{i = j \mid k} A_j B_k
+    C_i = \sum\limits_{i = j \mid k} A_j B_k
 \]
 
 分治过程
 \[
-\operatorname{FWT[A]} = merge(\operatorname{FWT[A_0]}, \operatorname{FWT[A_0]} + \operatorname{FWT[A_1]}),
+    \operatorname{FWT[A]} = merge(\operatorname{FWT[A_0]}, \operatorname{FWT[A_0]} + \operatorname{FWT[A_1]}),
 \]
 \[
-\operatorname{UFWT[A']} = merge(\operatorname{UFWT[A'_0]}, -\operatorname{UFWT[A'_0]} + \operatorname{UFWT[A'_1]}).
+    \operatorname{UFWT[A']} = merge(\operatorname{UFWT[A'_0]}, -\operatorname{UFWT[A'_0]} + \operatorname{UFWT[A'_1]}).
 \]
 
 \begin{lstlisting}[style=cpp]
@@ -3712,15 +2657,15 @@ auto FWT_or = [&](vi v, int type) -> vi {
 
 \subsubsection*{ xor }
 \[
-C_i = \sum\limits_{i = j \oplus k} A_j B_k
+    C_i = \sum\limits_{i = j \oplus k} A_j B_k
 \]
 
 分治过程
 \[
-\operatorname{FWT[A]} = merge(\operatorname{FWT[A_0]} + \operatorname{FWT[A_1]}, \operatorname{FWT[A_0]} - \operatorname{FWT[A_1]}),
+    \operatorname{FWT[A]} = merge(\operatorname{FWT[A_0]} + \operatorname{FWT[A_1]}, \operatorname{FWT[A_0]} - \operatorname{FWT[A_1]}),
 \]
 \[
-\operatorname{UFWT[A']} = merge\left(\frac{\operatorname{UFWT[A'_0]} + \operatorname{UFWT[A'_1]}}{2}, \frac{\operatorname{UFWT[A'_0]} - \operatorname{UFWT[A'_1]}}{2}\right).
+    \operatorname{UFWT[A']} = merge\left(\frac{\operatorname{UFWT[A'_0]} + \operatorname{UFWT[A'_1]}}{2}, \frac{\operatorname{UFWT[A'_0]} - \operatorname{UFWT[A'_1]}}{2}\right).
 \]
 
 \begin{lstlisting}[style=cpp]
@@ -4571,7 +3516,7 @@ int main() {
 
 插值的结果是
 \[
-f(x) = \sum_{i=1}^{n} y_i \prod_{j \neq i} \frac{x - x_j}{x_i - x_j},
+    f(x) = \sum_{i=1}^{n} y_i \prod_{j \neq i} \frac{x - x_j}{x_i - x_j},
 \]
 直接带入 \(k\) 并且取模即可, 时间复杂度 $O(n^2)$.
 
@@ -4595,12 +3540,12 @@ auto lagrange = (const vi& x, const vi& y, int n, int k) {
 
 给出的点是 $(i, y_i)$.
 \[
-\begin{aligned}
-& f(x) = \sum_{i=1}^{n} y_i \prod_{j \neq i} \frac{x - x_j}{x_i - x_j} \\
-& = \sum_{i=1}^{n} y_i \prod_{j \neq i} \frac{x - j}{i - j} \\
-& = \sum_{i=1}^{n} y_i \cdot \frac{\prod\limits_{j=1}^n (x - j)}{(x - i) (-1)^{n+1-i}(i-1)!(n+1-i)!} \\
-& = \left( \prod_{j=1}^n (x - j) \right) \left(\sum_{i=1}^n \frac{(-1)^{n+1-i}y_i}{(x-i)(i-1)!(n+1-i)!}\right),
-\end{aligned}
+    \begin{aligned}
+         & f(x) = \sum_{i=1}^{n} y_i \prod_{j \neq i} \frac{x - x_j}{x_i - x_j}                                          \\
+         & = \sum_{i=1}^{n} y_i \prod_{j \neq i} \frac{x - j}{i - j}                                                     \\
+         & = \sum_{i=1}^{n} y_i \cdot \frac{\prod\limits_{j=1}^n (x - j)}{(x - i) (-1)^{n+1-i}(i-1)!(n+1-i)!}            \\
+         & = \left( \prod_{j=1}^n (x - j) \right) \left(\sum_{i=1}^n \frac{(-1)^{n+1-i}y_i}{(x-i)(i-1)!(n+1-i)!}\right),
+    \end{aligned}
 \]
 时间复杂度为 \(O(n)\).
 
@@ -4630,7 +3575,7 @@ std::function<int(int, int)> sg = [&](int x) -> int {
 \subsection{ anti - nim game }
 若
 \begin{enumerate}
-    \item 所有堆的石子均为一个, 且 nim 和不为 0, 
+    \item 所有堆的石子均为一个, 且 nim 和不为 0,
     \item 至少有一堆石子超过一个, 且 nim 和为 0,
 \end{enumerate}
 则先手必败.
@@ -4640,6 +3585,7 @@ std::function<int(int, int)> sg = [&](int x) -> int {
 \subsection{ matrix }
 \subsubsection*{ determinant mod 998244353}
 \begin{lstlisting}[style=cpp]
+/* determinant */
 auto det = [&](int n, vvi e) -> int {
     int ans = 1;
     for (int i = 1; i <= n; i++) {
@@ -4674,7 +3620,8 @@ auto det = [&](int n, vvi e) -> int {
 \subsubsection*{ matrix multiplication }
 \(A_{n \times m}\) 与 \(B_{m \times k}\) 相乘并模 998244353.
 \begin{lstlisting}[style=cpp]
-auto matrix_mul = [&](int n, int m, int k, const vvi& a, const vvi& b) -> vvi {
+/* matrix multiplication */
+auto matmul = [&](int n, int m, int k, const vvi& a, const vvi& b) -> vvi {
     vvi c(n + 1, vi(k + 1));
     for (int i = 1; i <= n; i++) {
         for (int l = 1; l <= m; l++) {
@@ -4690,16 +3637,34 @@ auto matrix_mul = [&](int n, int m, int k, const vvi& a, const vvi& b) -> vvi {
 
 \subsection{ linear basis }
 \begin{lstlisting}[style=cpp]
-vi p(35);
-auto add_basis = [&](int x) {
-    for (int i = 31; i >= 0; i--) {
+/* linear basis */
+vl p(63), s(63);  /* basis and case */
+auto insert = [&](LL x, int id) {
+    LL ans = 0;
+    for (int i = 62; i >= 0; i--) {
         if (~(x >> i) & 1) continue;
         if (!p[i]) {
             p[i] = x;
+            s[i] = ans ^ (1ll << id);
             break;
         }
-        x ^= p[i];
+        x ^= p[i], ans ^= s[i];
     }
+    return x;
+};
+auto query = [&](LL x) {
+    LL ans = 0;
+    for (int i = 62; i >= 0; i--) {
+        if (~(x >> i) & 1) continue;
+        x ^= p[i], ans ^= s[i];
+    }
+    return (x ? -1 : ans);
+};
+auto queryMax = [&]() {
+    LL ans = 0;
+    for (int i = 62; i >= 0; i--)
+        if ((ans ^ p[i]) > ans) ans ^= p[i];
+    return ans;
 };
 \end{lstlisting}
 
@@ -4710,25 +3675,15 @@ auto add_basis = [&](int x) {
 \begin{lstlisting}[style=cpp]
 tandu struct Comp {
     T a, b;
-
     Comp(T _a = 0, T _b = 0) { a = _a, b = _b; }
-
     Comp operator+(const Comp& x) const { return Comp(a + x.a, b + x.b); }
-
     Comp operator-(const Comp& x) const { return Comp(a - x.a, b - x.b); }
-
     Comp operator*(const Comp& x) const { return Comp(a * x.a - b * x.b, a * x.b + b * x.a); }
-
     bool operator==(const Comp& x) const { return a == x.a and b == x.b; }
-
     T real() { return a; }
-
     T imag() { return b; }
-
     U norm() { return (U) a * a + (U) b * b; }
-
     Comp conj() { return Comp(a, -b); }
-
     Comp operator/(const Comp& x) const {
         Comp y = x;
         Comp c = Comp(a, b) * y.conj();
@@ -4736,9 +3691,7 @@ tandu struct Comp {
         return Comp(c.a / d, c.b / d);
     }
 };
-
 typedef Comp<LL, LL> complex;
-
 complex gcd(complex a, complex b) {
     LL d = b.norm();
     if (d == 0) return a;
@@ -4759,10 +3712,11 @@ complex gcd(complex a, complex b) {
 
 \newpage
 \section{ graph }
-\subsection{ topsort }
+\subsection{ topology sort }
 \begin{lstlisting}[style=cpp]
+/* topology sort */
 vi top;
-auto top_sort = [&]() -> bool {
+auto topsort = [&]() -> bool {
     vi d(n + 1);
     std::queue<int> q;
     for (int i = 1; i <= n; i++) {
@@ -4787,6 +3741,7 @@ auto top_sort = [&]() -> bool {
 
 \subsubsection*{ Floyd }
 \begin{lstlisting}[style=cpp]
+/* floyd */
 auto floyd = [&]() -> vvi {
     vvi dist(n + 1, vi(n + 1, inf));
     for (int i = 1; i <= n; i++) {
@@ -4808,6 +3763,7 @@ auto floyd = [&]() -> vvi {
 
 \subsubsection*{ Dijkstra }
 \begin{lstlisting}[style=cpp]
+/* dijkstra */
 auto dijkstra = [&](int s) -> vl {
     vl dist(n + 1, INF);
     vi vis(n + 1, 0);
@@ -4830,41 +3786,15 @@ auto dijkstra = [&](int s) -> vl {
 };
 \end{lstlisting}
 
-\subsubsection*{ Bellman - Fold }
-
-\begin{lstlisting}[style=cpp]
-int n, m, s;
-int dist[N];
-struct node{
-    int from, to, w;
-}edge[M];
-void bellman_fold(int s){
-    memset(dist, 0x3f, sizeof(dist));
-    dist[s] = 0;
-    for(int i = 1; i <= n; i++){
-        bool flag = true;
-        for(int j = 1; j <= m; j++){
-            int a = edge[j].from, b = edge[j].to, w = edge[j].w;
-            if(dist[a] == 0x3f3f3f3f) continue;
-            if(dist[b] > dist[a] + w){
-                dist[b] = dist[a] + w;
-                flag = false;
-            }
-        }
-        if(flag) break;
-    }
-}
-\end{lstlisting}
-
 \subsubsection*{ SPFA }
 \begin{lstlisting}[style=cpp]
+/* SPFA */
 int n, m, s;
 vl dist(n + 1, INF);
 std::vector<bool> vis(n + 1);
 std::vector<PLI > e(n + 1);
- 
 void spfa(int s){
-    rep(i, 1, n) dist[i] = INF;
+    for (int i = 1; i <= n; i++) dist[i] = INF;
     dist[s] = 0;
     std::queue<int> q;
     q.push(s);
@@ -4873,8 +3803,7 @@ void spfa(int s){
         auto u = q.front();
         q.pop();
         vis[u] = false;
-        for(auto j : e[u]){
-            int v = j.ff; LL w = j.ss;
+        for(const auto& [v, w] : e[u]){
             if(dist[v] > dist[u] + w){
                 dist[v] = dist[u] + w;
                 if(!vis[v]){
@@ -4889,6 +3818,7 @@ void spfa(int s){
 
 \subsubsection*{ Johnson }
 \begin{lstlisting}[style=cpp]
+/* johnson */
 auto johnson = [&]() -> vvl {
     /* 负环 */
     vl dist1(n + 1);
@@ -4917,7 +3847,6 @@ auto johnson = [&]() -> vvl {
         }
         return false;
     };
-
     /* dijkstra */
     vl dist2(n + 1);
     auto dijkstra = [&](int s) {
@@ -4941,7 +3870,6 @@ auto johnson = [&]() -> vvl {
             }
         }
     };
-
     if (spfa()) return vvl{};
     for (int u = 1; u <= n; u++) {
         for (auto& [v, w] : e[u]) {
@@ -4965,6 +3893,7 @@ auto johnson = [&]() -> vvl {
 
 \subsubsection*{ 最短路计数 - Dijkstra }
 \begin{lstlisting}[style=cpp]
+/* dijkstra */
 auto dijkstra = [&](int s) -> std::pair<vl, vi> {
     vl dist(n + 1, INF);
     vi cnt(n + 1), vis(n + 1);
@@ -4985,7 +3914,7 @@ auto dijkstra = [&](int s) -> std::pair<vl, vi> {
             } else if (dist[v] == dis + w) {
                 // cnt[v] += cnt[u];
                 cnt[v] += cnt[u];
-                cnt[v] %= 100003;
+                cnt[v] %= mod;
             }
         }
     }
@@ -4996,6 +3925,7 @@ auto dijkstra = [&](int s) -> std::pair<vl, vi> {
 \subsubsection*{ 最短路计数 - Floyd }
 
 \begin{lstlisting}[style=cpp]
+/* floyd */
 auto floyd() = [&] -> std::pair<vvi, vvi> {
     vvi dist(n + 1, vi(n + 1, inf));
     vvi cnt(n + 1, vi(n + 1));
@@ -5025,6 +3955,7 @@ auto floyd() = [&] -> std::pair<vvi, vvi> {
 判断的是最短路长度.
 
 \begin{lstlisting}[style=cpp]
+/* SPFA */
 auto spfa = [&]() -> bool {
     std::queue<int> q;
     vi vis(n + 1), cnt(n + 1);
@@ -5052,50 +3983,10 @@ auto spfa = [&]() -> bool {
 }
 \end{lstlisting}
 
-\subsubsection*{ 分层最短路 }
-
-有一个 $n$ 个点 $m$ 条边的无向图，你可以选择 $k$ 条道路以零代价通行，求 $s$ 到 $t$ 的最小花费。
-
-\begin{lstlisting}[style=cpp]
-int main() {
-    std::ios::sync_with_stdio(false);
-    std::cin.tie(0);
-    std::cout.tie(0);
-
-    int n, m, k, s, t;
-    std::cin >> n >> m >> k;
-    std::cin >> s >> t;
-    std::vector<std::vector<PIL>> e(n * (k + 1) + 1);
-    for (int i = 1; i <= m; i++) {
-        int a, b, c;
-        std::cin >> a >> b >> c;
-        e[a].emplace_back(b, c);
-        e[b].emplace_back(a, c);
-        for (int j = 1; j <= k; j++) {
-            e[a + (j - 1) * n].emplace_back(b + j * n, 0);
-            e[b + (j - 1) * n].emplace_back(a + j * n, 0);
-            e[a + j * n].emplace_back(b + j * n, c);
-            e[b + j * n].emplace_back(a + j * n, c);
-        }
-    }
-
-    auto dijkstra = [&](int s) -> vl {};
-
-    vl dist = dijkstra(s);
-    LL ans = INF;
-    for (int i = t; i <= n * (k + 1); i += n) {
-        Min(ans, dist[i]);
-    }
-
-    std::cout << ans << endl;
-
-    return 0;
-}
-\end{lstlisting}
-
 \subsection{ minimum spanning tree }
 \subsubsection*{ Kruskal }
 \begin{lstlisting}[style=cpp]
+/* kruskal */
 std::vector<std::tuple<int, int, int>> edge;
 auto kruskal = [&]() -> int {
     std::sort(all(edge), [&](std::tuple<int, int, int> a, std::tuple<int, int, int> b) {
@@ -5122,6 +4013,7 @@ auto kruskal = [&]() -> int {
 \subsection{ SCC }
 \subsubsection*{ Tarjan }
 \begin{lstlisting}[style=cpp]
+/* tarjan */
 vi dfn(n + 1), low(n + 1), stk(n + 1), belong(n + 1);
 int timestamp = 0, top = 0, scc_cnt = 0;
 std::vector<bool> in_stk(n + 1);
@@ -5148,8 +4040,6 @@ auto tarjan = [&](auto&& self, int u) -> void {
     }
 };
 \end{lstlisting}
-
-\subsubsection{ 缩点 }
 
 \subsection{ DCC }
 \subsubsection*{ 点双连通分量 }
@@ -5273,46 +4163,18 @@ for (int i = 1; i <= n; i++) {
 }
 \end{lstlisting}
 
-求桥. (可能有诈)
-
-\begin{lstlisting}[style=cpp]
-vi dfn(n + 1), low(n + 1), is_ecc(n + 1), fa(n + 1);
-int timestamp = 0, ecc = 0;
-std::function<void(int, int)> tarjan = [&](int u, int faa) {
-    fa[u] = faa;
-    low[u] = dfn[u] = ++timestamp;
-    for (auto v : e[u]) {
-        if (!dfn[v]) {
-            tarjan(v, u);
-            low[u] = std::min(low[u], low[v]);
-            if (low[v] > dfn[u]) {
-                is_ecc[v] = 1;
-                ecc++;
-            }
-        } else if (dfn[v] < dfn[u] && v != faa) {
-            low[u] = std::min(low[u], dfn[v]);
-        }
-    }
-};
-for (int i = 1; i <= n; i++) {
-    if (!dfn[i]) {
-        tarjan(i, i);
-    }
-}
-\end{lstlisting}
-
-\subsection{ two set }
+\subsection{ 2-sat }
 给出 \(n\) 个集合, 每个集合有 \(2\) 个元素, 已知若干个数对 \((a, b)\)，表示 \(a\) 与 \(b\) 矛盾.
 要从每个集合各选择一个元素, 判断能否一共选 \(n\) 个两两不矛盾的元素.
 
 \begin{lstlisting}[style=cpp]
-auto twoSat = [&](int n, const vpi& v) -> vi {
+/* two sat */
+auto 2sat = [&](int n, const vpi& v) -> vi {
     /* tarjan */
     vvi e(2 * n);
     vi dfn(2 * n), low(2 * n), stk(2 * n), belong(2 * n);
     int timestamp = 0, top = 0, scc_cnt = 0;
     std::vector<bool> in_stk(2 * n);
-
     auto tarjan = [&](auto&& self, int u) -> void {
         dfn[u] = low[u] = ++timestamp;
         stk[++top] = u;
@@ -5335,8 +4197,6 @@ auto twoSat = [&](int n, const vpi& v) -> vi {
             } while (v != u);
         }
     };
-    /* end tarjan */
-
     for (const auto& [a, b] : v) {
         e[a].push_back(b ^ 1);
         e[b].push_back(a ^ 1);
@@ -5358,6 +4218,7 @@ auto twoSat = [&](int n, const vpi& v) -> vi {
 \subsection{ minimum ring }
 \subsubsection*{ Floyd }
 \begin{lstlisting}[style=cpp]
+/* minimum ring */
 auto min_circle = [&]() -> int {
     vvi dist(n + 1, vi(n + 1, inf));
     for (int i = 1; i <= n; i++) {
@@ -5386,6 +4247,7 @@ auto min_circle = [&]() -> int {
 
 \subsection{ tree - center of gravity }
 \begin{lstlisting}[style=cpp]
+/* center of gravity */
 int sum;    /* 点权和 */
 vi size(n + 1), weight(n + 1), w(n + 1), depth(n + 1);
 std::array<int, 2> centroid = {0, 0};
@@ -5480,6 +4342,7 @@ int main() {
 
 \subsection{ tree - AHU }
 \begin{lstlisting}[style=cpp]
+/* AHU */
 std::map<vi, int> mapple;
 std::function<int(vvi&, int, int)> tree_hash = [&](vvi& e, int u, int fa) -> int {
     vi code;
@@ -5502,9 +4365,10 @@ std::function<int(vvi&, int, int)> tree_hash = [&](vvi& e, int u, int fa) -> int
 
 \subsection{ tree - LCA }
 \begin{lstlisting}[style=cpp]
-vvi e(n + 1), fa(n + 1, vi(50));
+/* LCA */
+int B = 30;
+vvi e(n + 1), fa(n + 1, vi(B));
 vi dep(n + 1);
-
 auto dfs = [&](auto&& self, int u) -> void {
     for (auto v : e[u]) {
         if (v == fa[u][0]) continue;
@@ -5513,18 +4377,16 @@ auto dfs = [&](auto&& self, int u) -> void {
         self(self, v);
     }
 };
-
 auto init = [&]() -> void {
     dep[root] = 1;
     dfs(dfs, root);
-    for (int j = 1; j <= 30; j++) {
+    for (int j = 1; j < B; j++) {
         for (int i = 1; i <= n; i++) {
             fa[i][j] = fa[fa[i][j - 1]][j - 1];
         }
     }
 };
 init();
-
 auto LCA = [&](int a, int b) -> int {
     if (dep[a] > dep[b]) std::swap(a, b);
     int d = dep[b] - dep[a];
@@ -5532,32 +4394,30 @@ auto LCA = [&](int a, int b) -> int {
         if (d & (1 << i)) b = fa[b][i];
     }
     if (a == b) return a;
-    for (int i = 30; i >= 0 and a != b; i--) {
+    for (int i = B - 1; i >= 0 and a != b; i--) {
         if (fa[a][i] == fa[b][i]) continue;
         a = fa[a][i];
         b = fa[b][i];
     }
     return fa[a][0];
 };
-
 auto dist = [&](int a, int b) -> int { return dep[a] + dep[b] - dep[LCA(a, b)] * 2; };
 \end{lstlisting}
 
-\subsection{ tree - HLD }
+\subsection{ tree - heavy light decomposion }
 对一棵有根树进行如下 \(4\) 种操作:
 \begin{enumerate}
-	\item \(1 \ x \ y \ z\): 将节点 \(x\) 到节点 \(y\) 的最短路径上所有节点的值加上 \(z\).
-	\item \(2 \ x \ y\): 查询节点 \(x\) 到节点 \(y\) 的最短路径上所有节点的值的和.
-	\item \(3 \ x \ z\): 将以节点 \(x\) 为根的子树上所有节点的值加上 \(z\).
-	\item \(4 \ x\): 查询以节点 \(x\) 为根的子树上所有节点的值的和.
+    \item \(1 \ x \ y \ z\): 将节点 \(x\) 到节点 \(y\) 的最短路径上所有节点的值加上 \(z\).
+    \item \(2 \ x \ y\): 查询节点 \(x\) 到节点 \(y\) 的最短路径上所有节点的值的和.
+    \item \(3 \ x \ z\): 将以节点 \(x\) 为根的子树上所有节点的值加上 \(z\).
+    \item \(4 \ x\): 查询以节点 \(x\) 为根的子树上所有节点的值的和.
 \end{enumerate}
 
 \begin{lstlisting}[style=cpp]
-/* HLD */
+/* heavy light decomposion */
 int cnt = 0;
 vi son(n + 1), fa(n + 1), siz(n + 1), depth(n + 1);
 vi dfn(n + 1), rank(n + 1), top(n + 1), botton(n + 1);
-
 auto dfs1 = [&](auto&& self, int u) -> void {
     son[u] = -1, siz[u] = 1;
     for (auto v : e[u]) {
@@ -5569,7 +4429,6 @@ auto dfs1 = [&](auto&& self, int u) -> void {
         if (son[u] == -1 or siz[v] > siz[son[u]]) son[u] = v;
     }
 };
-
 auto dfs2 = [&](auto&& self, int u, int t) -> void {
     top[u] = t;
     dfn[u] = ++cnt;
@@ -5585,12 +4444,9 @@ auto dfs2 = [&](auto&& self, int u, int t) -> void {
         }
     }
 };
-
 depth[root] = 1;
 dfs1(dfs1, root);
 dfs2(dfs2, root, root);
-
-/*
 
 /* 求 LCA */
 auto LCA = [&](int a, int b) -> int {
@@ -5613,15 +4469,12 @@ opt(dfn[u], dfn[v]);
 /* 维护 u 为根的子树 */
 opt(dfn[u], botton[u]);
 
-*/
-
 /* 
 线段树的 build() 函数中 
 if(l == r) tree[u] = {l, l, w[rank[l]], 0}; 
 */
 
 build(1, 1, n);
-
 for (int i = 1; i <= m; i++) {
     int op, u, v;
     LL k;
@@ -5658,6 +4511,7 @@ for (int i = 1; i <= m; i++) {
 
 \subsection{ tree - virtual tree }
 \begin{lstlisting}[style=cpp]
+/* virtual tree */
 auto build_vtree = [&](vi ver) -> void {
     std::sort(all(ver), [&](int x, int y) { return dfn[x] < dfn[y]; });
     vi stk = {1};
@@ -5964,34 +4818,8 @@ int main() {
 
 \subsection{ network flow - maximal flow }
 \subsubsection*{ Dinic }
-理论
-
-通过 BFS 将网络根据点到原点的距离 (每条边长度定义为 \(1\)) 分层, 然后通过 DFS 暴力地在有效的网络中寻找增广路, 不断循环上述步骤直至图中不存在增广路.
-
-BFS 逻辑:
-
-\(u \to v\) 的条件满足下面两条:
-\begin{enumerate}
-	\item \(v\) 未必走过;
-	\item \(e: u \to v\) 上还有残余流量, 即当前 \(e\) 的流量未达到其上限.
-\end{enumerate}
-
-DFS 逻辑:
-
-维护两个值: \(u\): 当前搜索到哪个点; \(now\): 可以增加的流量. \(u \to v\) 的条件:
-
-\begin{enumerate}
-	\item 在上一次 BFS 时, \(v\) 在 \(u\) 下面一层, 即 \(d_v = d_u + 1\).
-	\item 递归 \(\operatorname{dfs}(v, now)\), 这时可增加的流量上限要与 \(e: u \to v\) 中可增加的流量上限取最小值, 递归结果大于零才意味着可以增加流量.
-\end{enumerate}
-
-优化:
-\begin{enumerate}
-	\item 一次可以处理多条增广路.
-	\item 每一条有向边事实上只会增加一次流量, 引入 \(cur\) 记录处理到了每个点的哪一条边以加快 DFS.
-\end{enumerate}
-
 \begin{lstlisting}[style=cpp]
+/* dinic */
 struct edge {
     int from, to;
     LL cap, flow;
@@ -6066,13 +4894,12 @@ struct Dinic {
 \end{lstlisting}
 
 \subsubsection*{ HLPP }
-抄板子吧, 别管原理了, 留一个图吧.
-
 \begin{center}
-	\includegraphics[width=9cm]{graphs/hhlp.png}
+    \includegraphics[width=9cm]{graphs/hhlp.png}
 \end{center}
 
 \begin{lstlisting}[style=cpp]
+/* hlpp */
 struct HLPP {
     int n, m = 0, s, t;
     std::vector<edge> e;      /* 边 */
@@ -6194,7 +5021,6 @@ struct HLPP {
 \end{lstlisting}
 
 \subsection{ network flow - minimum cost flow }
-在网络中获得最大流的同时要求费用最小.
 
 \subsubsection*{ Dinic + SPFA }
 \begin{lstlisting}[style=cpp]
@@ -6281,6 +5107,7 @@ struct MCMF {
 
 \subsubsection*{ Primal-Dual 原始对偶算法 }
 \begin{lstlisting}[style=cpp]
+/* primal dual */
 struct edge {
     int from, to;
     LL cap, cost;
@@ -6379,6 +5206,7 @@ struct MCMF {
 \end{lstlisting}
 
 \subsubsection*{ 存在负环的网络 }
+流满后推流, 转化为上下界网络流.
 
 \subsection{ network flow - minimal cut }
 最小割解决的问题是将图中的点集 \(V\) 划分成 \(S\) 与 \(T\), 使得 \(S\) 与 \(T\) 之间的连边的容量总和最小.
@@ -6392,12 +5220,50 @@ struct MCMF {
 \subsubsection*{ 例子 }
 最小割的本质是对图中点集进行 \(2\)-划分, 网络流只是求解答案的手段.
 \begin{enumerate}
-	\item 在图中花费最小的代价断开一些边使得源点 \(s\) 无法流到汇点 \(t\).
+    \item 在图中花费最小的代价断开一些边使得源点 \(s\) 无法流到汇点 \(t\).
 
-    直接跑最大流就得到了答案.
+          直接跑最大流就得到了答案.
     \item 在图中删除最少的点使得源点 \(s\) 无法流到汇点 \(t\).
 
-    对每个点进行拆点, 在 \(i\) 与 \(i^\prime\) 之间建立容量为 \(1\) 的有向边.
+          对每个点进行拆点, 在 \(i\) 与 \(i^\prime\) 之间建立容量为 \(1\) 的有向边.
+\end{enumerate}
+
+\subsection{ network flow with upper / lower bound }
+\subsubsection{ 无源汇上下界可行流 }
+每条有向边有流量的上下界限制, 但整张图并未确定源点与汇点. 如果存在满足每个点的流入量等于流出量, 且每条边的流量满足其上下界限制的流, 称之为可行流.
+\begin{enumerate}
+    \item 将每条边先给予大小为下界的流量,
+    \item 对每个点计算总流入量 $\text{in}_u$ 与总流出量 $\text{out}_u$ 的值,
+    \item 建立超级源点到每个点, 容量大小为 $\max\{0, \text{in}_u - \text{out}_u\}$ 的边; 建立每个点到超级汇点, 容量大小为 $\max\{0, \text{out}_u - \text{in}_u\}$,
+    \item 跑从超级源点到超级汇点的最大流, 如果超级源点每条边都流满意味着存在可行流. 将每条边的流量加上预先给每条边设置的下界流量即为可行流方案.
+\end{enumerate}
+
+\subsubsection{ 有源汇上下界可行流 }
+\begin{enumerate}
+    \item 建立汇点 $t$ 到源点 $s$ 的, 容量为 $\infty$ 的有向边, 将其转化为无源汇的问题.
+\end{enumerate}
+
+\subsubsection{ 有源汇上下界最大流 }
+\begin{enumerate}
+    \item 建立汇点 $t$ 到源点 $s$ 的, 容量为 $\infty$ 的有向边, 将其转化为无源汇的问题,
+    \item 跑上下界可行流, 可行流流量为边 $t \xrightarrow{\infty} s$ 的流量.
+    \item 删除 $t \xrightarrow{\infty} s$ 的边, 再残量网络上跑 $s$ 到 $t$ 的最大流,
+    \item 答案等于可行流流量 + 最大流流量.
+\end{enumerate}
+
+\subsubsection{ 有源汇上下界最小流 }
+\begin{enumerate}
+    \item 建立汇点 $t$ 到源点 $s$ 的, 容量为 $\infty$ 的有向边, 将其转化为无源汇的问题,
+    \item 跑上下界可行流, 可行流流量为边 $t \xrightarrow{\infty} s$ 的流量.
+    \item 删除 $t \xrightarrow{\infty} s$ 的边, 再残量网络上跑 $t$ 到 $s$ 的最大流,
+    \item 答案等于可行流流量 - 最大流流量.
+\end{enumerate}
+
+\subsubsection{ 有源汇上下界最小费用可行流 }
+\begin{enumerate}
+    \item 按下界流满并计算费用,
+    \item 类似有源汇上下界最大流建图, 跑超级源点到超级汇点的费用流,
+    \item 答案等于按下界的费用加上后续残量网络.
 \end{enumerate}
 
 \subsection{ matching - matching on bipartite graph }
@@ -6406,6 +5272,7 @@ struct MCMF {
 时间复杂度: \(O(n^3)\).
 
 \begin{lstlisting}[style=cpp]
+/* Kuhn-Munkres */
 auto KM = [&](int n1, int n2, vvi e) -> std::pair<vi, vi> {
     vi vis(n2 + 1);
     vi l(n1 + 1, -1), r(n2 + 1, -1);
@@ -6439,6 +5306,7 @@ std::cout << mchl.size() - std::count(all(mchl), -1) << endl;
 据说时间复杂度是 \(O(m \sqrt{n})\) 的, 但是快的飞起.
 
 \begin{lstlisting}[style=cpp]
+/* Hopcroft-Karp */
 vpi e(m);
 auto hopcroft_karp = [&](int n, int m, vpi& e) -> std::pair<vi, vi> {
     vi g(e.size()), l(n + 1, -1), r(m + 1, -1), d(n + 2);
@@ -6487,6 +5355,7 @@ auto hopcroft_karp = [&](int n, int m, vpi& e) -> std::pair<vi, vi> {
 注意是否为完美匹配, 非完美选 \(0\), 完美选 \(-INF\). (存疑)
 
 \begin{lstlisting}[style=cpp]
+/* Kuhn-Munkres */
 auto KM = [&](int n, vvl e) -> std::tuple<LL, vi, vi> {
     vl la(n + 1), lb(n + 1), pp(n + 1), vx(n + 1);
     vi l(n + 1, -1), r(n + 1, -1);
@@ -6548,45 +5417,36 @@ auto [ans, mchl, mchr] = KM(n, e);
 \subsection{ two demention }
 \subsubsection*{ 点与向量 }
 \begin{lstlisting}[style=cpp]
-tandu struct pnt {
-    T x, y;
-
-    pnt(T _x = 0, T _y = 0) { x = _x, y = _y; }
-
-    pnt operator+(const pnt& a) const { return pnt(x + a.x, y + a.y); }
-
-    pnt operator-(const pnt& a) const { return pnt(x - a.x, y - a.y); }
-
-    /*
-    bool operator<(const pnt& a) const {
-        if (std::is_same<T, double>::value) {
-            if (fabs(x - a.x) < eps) return y < a.y;
-        } else {
-            if (x == a.x) return y < a.y;
-        }
-        return x < a.x;
+struct Point {
+    LL x = 0, y = 0;
+    Point() = default;
+    Point(long long x, long long y) : x(x), y(y) {}
+    operator bool() { return *this != Point{}; }
+    friend bool operator==(Point p, Point q) { return p.x == q.x and p.y == q.y; }
+    friend bool operator!=(Point p, Point q) { return !(p == q); }
+    friend Point operator+(Point p, Point q) { return {p.x + q.x, p.y + q.y}; }
+    friend Point operator-(Point p, Point q) { return {p.x - q.x, p.y - q.y}; }
+    friend LL dot(Point p, Point q) { return p.x * q.x + p.y * q.y; }
+    friend LL det(Point p, Point q) { return p.x * q.y - q.x * p.y; }
+    friend bool operator<(Point p, Point q) {
+        return std::pair{p.quad(), det(q, p)} < std::pair{q.quad(), 0ll};
+        return (p.x == q.x ? p.y < q.y : p.x < q.x);
     }
-    */
-
-    /* 注意数乘会不会爆 int */
-    pnt operator*(const T k) const { return pnt(k * x, k * y); }
-
-    U operator*(const pnt& a) const { return (U) x * a.x + (U) y * a.y; }
-
-    U operator^(const pnt& a) const { return (U) x * a.y - (U) y * a.x; }
-
-    U dist(const pnt a) { return ((U) a.x - x) * ((U) a.x - x) + ((U) a.y - y) * ((U) a.y - y); }
-
-    U len() { return dist(pnt(0, 0)); }
-
-    /* a, b, c 成逆时针 */
-    friend U area(pnt a, pnt b, pnt c) { return (b - a) ^ (c - a); }
-
-    /* 两向量夹角，返回 cos 值 */
-    double get_angle(pnt a) {
-        return (double) (pnt(x, y) * a) / sqrt((double) pnt(x, y).len() * (double) a.len());
+    int quad() const {
+        if (x > 0 && y >= 0) return 1;
+        if (x <= 0 and y > 0) return 2;
+        if (x < 0 and y <= 0) return 3;
+        if (x >= 0 and y < 0) return 4;
+        return 0;
+    }
+    friend LL dist(Point p, Point q) {
+        return (p.x - q.x) * (p.x - q.x) + (p.y - q.y) * (p.y - q.y);
     }
 };
+std::istream& operator>>(std::istream& is, Point& p) { return is >> p.x >> p.y; }
+std::ostream& operator<<(std::ostream& os, Point p) {
+    return os << '(' << p.x << ',' << p.y << ')';
+}
 \end{lstlisting}
 
 \subsubsection*{ 线段 }
@@ -6620,6 +5480,7 @@ struct line {
 \subsection{ convex }
 \subsubsection*{ 2D }
 \begin{lstlisting}[style=cpp]
+/* andrew */
 auto andrew = [&](std::vector<point>& v) -> std::vector<point> {
     std::sort(all(v));
     std::vector<point> stk;
@@ -6644,7 +5505,8 @@ auto andrew = [&](std::vector<point>& v) -> std::vector<point> {
 
 \subsection*{ half plane }
 \begin{lstlisting}[style=cpp]
-auto halfPlane = [&](std::vector<line>& ln) -> std::vector<point> {
+/* half plane */
+auto half_plane = [&](std::vector<line>& ln) -> std::vector<point> {
     std::sort(all(ln));
     ln.erase(
         unique(
@@ -6696,7 +5558,6 @@ std::sort(all(q), [&](node a, node b) {
     return a.l / block == b.l / block ? (a.r == b.r ? 0 : ((a.l / block) & 1) ^ (a.r < b.r))
                                         : a.l < b.l;
 });
-
 auto move = [&](int x, int op) -> void {
     if (op == 1) {
         /* operations */
@@ -6704,7 +5565,6 @@ auto move = [&](int x, int op) -> void {
         /* operations */
     }
 };
-
 for (int k = 1, l = 1, r = 0; k <= m; k++) {
     node Q = q[k];
     while (l > Q.l) {
@@ -6748,8 +5608,6 @@ struct data {
 int main() {
     std::ios::sync_with_stdio(false);
     std::cin.tie(0);
-    std::cout.tie(0);
-
 
     int n, k;
     std::cin >> n >> k;
@@ -6757,13 +5615,11 @@ int main() {
     for (int i = 1; i <= n; i++) {
         std::cin >> v1[i].a >> v1[i].b >> v1[i].c;
     }
-
     std::sort(v1 + 1, v1 + n + 1, [&](data x, data y) {
         if (x.a != y.a) return x.a < y.a;
         if (x.b != y.b) return x.b < y.b;
         return x.c < y.c;
     });
-
     int t = 0, top = 0;
     for (int i = 1; i <= n; i++) {
         t++;
@@ -6773,16 +5629,13 @@ int main() {
             t = 0;
         }
     }
-
     vi tr(N);
-
     auto add = [&](int pos, int val) -> void {
         while (pos <= k) {
             tr[pos] += val;
             pos += lowbit(pos);
         }
     };
-
     auto query = [&](int pos) -> int {
         int ans = 0;
         while (pos > 0) {
@@ -6791,7 +5644,6 @@ int main() {
         }
         return ans;
     };
-
     std::function<void(int, int)> CDQ = [&](int l, int r) -> void {
         if (l == r) return;
         int mid = (l + r) >> 1;
@@ -6818,7 +5670,6 @@ int main() {
         }
         return;
     };
-
     CDQ(1, top);
     vi ans(n + 1);
     for (int i = 1; i <= top; i++) {
@@ -6827,9 +5678,195 @@ int main() {
     for (int i = 1; i <= n; i++) {
         std::cout << ans[i] << endl;
     }
-
     return 0;
 }
 \end{lstlisting}
+
+\newpage
+\section{ Print All Cases }
+\subsection{ print all trees with \(n\) nodes }
+构造所有 $n$ 个节点的树.
+
+\subsubsection{ 有根树 }
+
+表示其数量的数列在 oeis 上编号为 A000081.
+\(n = 1, 2, 3 \cdots, 20\) 的项分别为:
+\[
+    \begin{aligned}
+         & 1, 1, 2, 4, 9,                              \\
+         & 20, 48, 115, 286, 719,                      \\
+         & 1842, 4766, 12486, 32973, 87811,            \\
+         & 235381, 634847, 1721159, 4688676, 12826228.
+    \end{aligned}
+\]
+
+构造所有 $n \leq 20$ 的有根树的 (平均) 运行时间为 15.7054s.
+
+\begin{lstlisting}[style=cpp]
+/* integer partition */
+int n = 5;
+std::vector<vvi> part(n + 1);
+auto integerPartition = [&](int n) {
+    // part[1] = {{1}};
+    for (int i = 1; i <= n; i++) {
+        part[i].push_back({i});
+        for (int j = 1; j < i; j++) {
+            for (const auto& v : part[i - j]) {
+                vi tmp = v;
+                tmp.push_back(j);
+                std::sort(all(tmp));
+                part[i].push_back(tmp);
+            }
+        }
+        std::sort(all(part[i]));
+        part[i].erase(unique(all(part[i])), part[i].end());
+    }
+};
+integerPartition(n);
+/* find all trees */
+std::vector<std::vector<std::string>> trees(n + 1);
+auto allTrees = [&](int n) {
+    std::string s;
+    for (int i = 1; i < n; i++) s += '(';
+    for (int i = 1; i < n; i++) s += ')';
+    trees[n].push_back(s);
+    for (const auto& v : part[n - 1]) {
+        std::vector<std::string> now;
+        auto dfs = [&](auto&& self, int i) {
+            if (i == v.size()) {
+                std::string s = "";
+                auto tmp = now;
+                std::sort(all(tmp));
+                for (const auto& ss : tmp) s += '(' + ss + ')';
+                trees[n].push_back(s);
+                return;
+            }
+            for (const auto& s : trees[v[i]]) {
+                now.push_back(s);
+                self(self, i + 1);
+                now.pop_back();
+            }
+        };
+        dfs(dfs, 0);
+    }
+    std::sort(all(trees[n]));
+    trees[n].erase(unique(all(trees[n])), trees[n].end());
+};
+for (int i = 1; i <= n; i++) {
+    allTrees(i);
+    debug(i, trees[i].size());
+    std::cout << '\n';
+}
+for (const auto& s : trees[n]) {
+    vvi e(n + 1);
+    vi fa(n + 1);
+    int cnt = 1, now = 1;
+    for (const auto& c : s) {
+        if (c == '(') {
+            cnt += 1;
+            e[now].push_back(cnt);
+            e[cnt].push_back(now);
+            fa[cnt] = now;
+            now = cnt;
+        } else {
+            now = fa[now];
+        }
+    }
+    debug(e);
+    /* do the things you need */
+}
+\end{lstlisting}
+
+\newpage
+\section{ Magic }
+\subsection{ magic heap }
+
+对顶堆维护中位数.
+
+\begin{lstlisting}[style=cpp]    
+/* magic heap */
+struct MagicHeap {
+    LL suml = 0, sumr = 0;
+    std::priority_queue<int> ql;
+    std::priority_queue<int, std::vector<int>, std::greater<int>> qr;
+    void le2ri() {
+        auto x = ql.top();
+        suml -= x, ql.pop();
+        sumr += x, qr.push(x);
+    };
+    void ri2le() {
+        auto x = qr.top();
+        sumr -= x, qr.pop();
+        suml += x, ql.push(x);
+    };
+    void pushL(int x) { suml += x, ql.push(x); }
+    void pushR(int x) { sumr += x, qr.push(x); }
+    void push(int x) {
+        if (ql.empty()) {
+            pushL(x);
+        } else if (qr.empty()) {
+            (x <= ql.top() ? le2ri(), pushL(x) : pushR(x));
+        } else {
+            int le = ql.top(), ri = qr.top();
+            if (le <= x and x <= ri) {
+                (ql.size() == qr.size() ? pushL(x) : pushR(x));
+            } else if (x < le) {
+                if (ql.size() != qr.size()) le2ri();
+                pushL(x);
+            } else {
+                if (ql.size() <= qr.size()) ri2le();
+                pushR(x);
+            }
+        }
+    }
+    int size() { return ql.size() + qr.size(); }
+    bool empty() { return ql.empty() and qr.empty(); }
+    LL val() { return suml + sumr; }
+    LL mid() { return ql.top(); }
+    LL dist() { return sumr - suml + ql.top() * (ql.size() - qr.size()); }
+};
+\end{lstlisting}
+
+\subsection{ operator queue }
+
+双栈维护队列半群.
+
+\begin{lstlisting}[style=cpp]
+template <typename T, typename Op>
+struct OpQueue {
+    static_assert(std::is_convertible_v<std::invoke_result_t<Op, T, T>, T>);
+    const T e;
+    const Op op;
+    std::vector<T> l, r, a;
+    OpQueue(T e, Op op) : e(e), op(op), l{e}, r{e} {}
+    T val() const { return op(l.back(), r.back()); }
+    void push(T x) {
+        r.push_back(op(r.back(), x));
+        a.push_back(x);
+    }
+    void pop() {
+        if (l.size() == 1) {
+            for (; !a.empty(); a.pop_back()) {
+                l.push_back(op(a.back(), l.back()));
+            }
+            r.resize(1);
+        }
+        assert(l.size() > 1);
+        l.pop_back();
+    }
+    int size() const { return l.size() + r.size() - 2; }
+    bool empty() const { return l.size() + r.size() == 2; }
+};
+
+/* When using this, remember to replace "T" with correct type and "e" with identity in the half group. */
+auto op = [](T a, T b) -> T {
+    /* You operations */
+};
+OpQueue<T, decltype(op)> a(e, op);
+\end{lstlisting}
+
+
+
+
 
 \end{document}

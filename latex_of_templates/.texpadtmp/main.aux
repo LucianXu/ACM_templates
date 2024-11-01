@@ -2,10 +2,13 @@
 \providecommand\hyper@newdestlabel[2]{}
 \providecommand\HyperFirstAtBeginDocument{\AtBeginDocument}
 \HyperFirstAtBeginDocument{\ifx\hyper@anchor\@undefined
+\global\let\oldcontentsline\contentsline
+\gdef\contentsline#1#2#3#4{\oldcontentsline{#1}{#2}{#3}}
 \global\let\oldnewlabel\newlabel
 \gdef\newlabel#1#2{\newlabelxx{#1}#2}
 \gdef\newlabelxx#1#2#3#4#5#6{\oldnewlabel{#1}{{#2}{#3}}}
 \AtEndDocument{\ifx\hyper@anchor\@undefined
+\let\contentsline\oldcontentsline
 \let\newlabel\oldnewlabel
 \fi}
 \fi}
@@ -16,80 +19,91 @@
 \@writefile{toc}{\contentsline {section}{\numberline {1} hpp }{5}{section.1}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {1.1} heading }{5}{subsection.1.1}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {1.2} debug.h }{6}{subsection.1.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {1.3} \(F_p\) }{6}{subsection.1.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {1.3} mod int }{6}{subsection.1.3}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {2} shell scripts }{8}{section.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.1} md5er.sh }{8}{subsection.2.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.2} formater.sh }{8}{subsection.2.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.3} checker.sh }{8}{subsection.2.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1} linux version }{8}{subsection.2.1}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {3} data structure }{9}{section.3}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.1} stack }{9}{subsection.3.1}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.2} queue }{9}{subsection.3.2}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.3} DSU }{9}{subsection.3.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.4} ST }{9}{subsection.3.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.5} cartesian tree }{10}{subsection.3.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4} spare table }{9}{subsection.3.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.5} Cartesian tree }{10}{subsection.3.5}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.6} segment tree }{10}{subsection.3.6}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.7} hjt segment tree }{16}{subsection.3.7}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.8} treap }{19}{subsection.3.8}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.9} splay }{24}{subsection.3.9}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.10} tree in tree }{27}{subsection.3.10}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {4} string }{33}{section.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.1} kmp }{33}{subsection.4.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.2} z function }{33}{subsection.4.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.3} trie }{34}{subsection.4.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {5} math - number theory }{37}{section.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.1} Eculid }{37}{subsection.5.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.2} inverse }{38}{subsection.5.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.3} sieve }{39}{subsection.5.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.4} block }{41}{subsection.5.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.5} CRT \& exCRT }{42}{subsection.5.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.6} BSGS \& exBSGS }{42}{subsection.5.6}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.7} Miller Rabin }{43}{subsection.5.7}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.8} Pollard Rho }{43}{subsection.5.8}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.9} quadratic residu }{44}{subsection.5.9}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.10} Lucas }{44}{subsection.5.10}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.11} Wilson }{47}{subsection.5.11}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.12} LTE }{47}{subsection.5.12}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.13} Mobius inversion}{48}{subsection.5.13}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {6} math - polynomial }{49}{section.6}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.1} FTT }{49}{subsection.6.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.2} FWT }{50}{subsection.6.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.3} class polynomial }{52}{subsection.6.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.4} wsy poly }{55}{subsection.6.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {7} math - game theory }{63}{section.7}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {7.1} nim game }{63}{subsection.7.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {7.2} anti - nim game }{63}{subsection.7.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {8} math - linear algebra}{64}{section.8}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {8.1} matrix }{64}{subsection.8.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {8.2} linear basis }{64}{subsection.8.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {8.3} linear programming }{64}{subsection.8.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {9} complex number }{65}{section.9}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {10} graph }{66}{section.10}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {10.1} topsort }{66}{subsection.10.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {10.2} shortest path }{66}{subsection.10.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {10.3} minimum spanning tree }{70}{subsection.10.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {10.4} SCC }{70}{subsection.10.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {10.4.1} 缩点 }{71}{subsubsection.10.4.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {10.5} DCC }{71}{subsection.10.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {10.6} two set }{72}{subsection.10.6}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {10.7} minimum ring }{73}{subsection.10.7}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {10.8} tree - center of gravity }{73}{subsection.10.8}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {10.9} tree - DSU on tree }{74}{subsection.10.9}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {10.10} tree - AHU }{75}{subsection.10.10}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {10.11} tree - LCA }{75}{subsection.10.11}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {10.12} tree - HLD }{76}{subsection.10.12}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {10.13} tree - virtual tree }{77}{subsection.10.13}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {10.14} tree - pseudo tree }{77}{subsection.10.14}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {10.15} tree - divide and conquer on tree }{78}{subsection.10.15}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {10.16} network flow - maximal flow }{81}{subsection.10.16}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {10.17} network flow - minimum cost flow }{84}{subsection.10.17}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {10.18} network flow - minimal cut }{86}{subsection.10.18}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {10.19} matching - matching on bipartite graph }{87}{subsection.10.19}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {10.20} matching - matching on general graph }{88}{subsection.10.20}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {11} geometry }{89}{section.11}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {11.1} two demention }{89}{subsection.11.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {11.2} convex }{90}{subsection.11.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {12} offline algorithm}{91}{section.12}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {12.1} discretization }{91}{subsection.12.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {12.2} Mo algorithm }{91}{subsection.12.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {12.3} CDQ }{91}{subsection.12.3}\protected@file@percent }
-\gdef \@abspage@last{92}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.7} persistent segment tree }{10}{subsection.3.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.8} treap }{13}{subsection.3.8}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.9} splay }{16}{subsection.3.9}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4} string }{19}{section.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1} kmp }{19}{subsection.4.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2} z function }{19}{subsection.4.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3} manacher }{20}{subsection.4.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4} PAM }{21}{subsection.4.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.5} Suffix Array }{21}{subsection.4.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.6} trie }{22}{subsection.4.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5} math - number theory }{25}{section.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1} Eculid }{25}{subsection.5.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2} inverse }{26}{subsection.5.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3} sieve }{27}{subsection.5.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.4} block }{29}{subsection.5.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.5} CRT \& exCRT }{30}{subsection.5.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.6} BSGS \& exBSGS }{30}{subsection.5.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.7} Miller Rabin }{31}{subsection.5.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.8} Pollard Rho }{31}{subsection.5.8}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.9} quadratic residu }{32}{subsection.5.9}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.10} Lucas }{32}{subsection.5.10}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.11} Wilson }{34}{subsection.5.11}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.12} LTE }{35}{subsection.5.12}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.13} Mobius inversion}{36}{subsection.5.13}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {6} math - polynomial }{37}{section.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.1} FTT }{37}{subsection.6.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.2} FWT }{38}{subsection.6.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.3} class polynomial }{40}{subsection.6.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.4} wsy poly }{43}{subsection.6.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {7} math - game theory }{51}{section.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.1} nim game }{51}{subsection.7.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.2} anti - nim game }{51}{subsection.7.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {8} math - linear algebra}{52}{section.8}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {8.1} matrix }{52}{subsection.8.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {8.2} linear basis }{52}{subsection.8.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {8.3} linear programming }{53}{subsection.8.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {9} complex number }{54}{section.9}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {10} graph }{55}{section.10}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {10.1} topology sort }{55}{subsection.10.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {10.2} shortest path }{55}{subsection.10.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {10.3} minimum spanning tree }{58}{subsection.10.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {10.4} SCC }{58}{subsection.10.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {10.5} DCC }{59}{subsection.10.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {10.6} 2-sat }{60}{subsection.10.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {10.7} minimum ring }{61}{subsection.10.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {10.8} tree - center of gravity }{61}{subsection.10.8}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {10.9} tree - DSU on tree }{62}{subsection.10.9}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {10.10} tree - AHU }{63}{subsection.10.10}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {10.11} tree - LCA }{63}{subsection.10.11}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {10.12} tree - heavy light decomposion }{63}{subsection.10.12}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {10.13} tree - virtual tree }{65}{subsection.10.13}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {10.14} tree - pseudo tree }{65}{subsection.10.14}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {10.15} tree - divide and conquer on tree }{66}{subsection.10.15}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {10.16} network flow - maximal flow }{68}{subsection.10.16}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {10.17} network flow - minimum cost flow }{71}{subsection.10.17}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {10.18} network flow - minimal cut }{74}{subsection.10.18}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {10.19} network flow with upper / lower bound }{74}{subsection.10.19}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {10.19.1} 无源汇上下界可行流 }{74}{subsubsection.10.19.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {10.19.2} 有源汇上下界可行流 }{74}{subsubsection.10.19.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {10.19.3} 有源汇上下界最大流 }{75}{subsubsection.10.19.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {10.19.4} 有源汇上下界最小流 }{75}{subsubsection.10.19.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {10.19.5} 有源汇上下界最小费用可行流 }{75}{subsubsection.10.19.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {10.20} matching - matching on bipartite graph }{75}{subsection.10.20}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {10.21} matching - matching on general graph }{77}{subsection.10.21}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {11} geometry }{78}{section.11}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {11.1} two demention }{78}{subsection.11.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {11.2} convex }{78}{subsection.11.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {12} offline algorithm}{80}{section.12}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {12.1} discretization }{80}{subsection.12.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {12.2} Mo algorithm }{80}{subsection.12.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {12.3} CDQ }{80}{subsection.12.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {13} Print All Cases }{82}{section.13}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {13.1} print all trees with \(n\) nodes }{82}{subsection.13.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {13.1.1} 有根树 }{82}{subsubsection.13.1.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {14} Magic }{84}{section.14}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {14.1} magic heap }{84}{subsection.14.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {14.2} operator queue }{84}{subsection.14.2}\protected@file@percent }
+\gdef \@abspage@last{85}
