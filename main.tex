@@ -6867,6 +6867,39 @@ int main(){
     return Acc::work(),0;
 }
 \end{lstlisting}
+\subsection{ Simpson }
+\begin{lstlisting}[style=cpp]
+#include <bits/stdc++.h>
+using namespace std;
+double a;
+double f(double x) {
+    return pow(x, a / x - x);
+}
+double simpson(double l, double r) {
+    double mid = (l + r) / 2;
+    return (r - l) * (f(l) + 4 * f(mid) + f(r)) / 6;
+}
+double asr(double l, double r, double eps, double ans, int d) {
+    double mid = (l + r) / 2;
+    double Fl = simpson(l, mid), Fr = simpson(mid, r);
+    if (abs(Fl + Fr - ans) <= 15 * eps && d < 0) {
+        return Fl + Fr + (Fl + Fr - ans) / 15;
+    }
+    return asr(l, mid, eps / 2, Fl, d - 1) + asr(mid, r, eps / 2, Fr, d - 1);
+}
+double calc(double l, double r, double eps) {
+    return asr(l, r, eps, simpson(l, r), 12);
+}
+int main() {
+    cin >> a;
+    if (a < 0) {
+        cout << "orz\n";
+    } else {
+        cout << fixed << setprecision(5) << calc(1e-8, 15, 1e-8) << '\n';
+    }
+}
+\end{lstlisting}
+
 
 \newpage
 \section{ offline algorithm}
