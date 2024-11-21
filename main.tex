@@ -6790,7 +6790,7 @@ auto andrew = [&](std::vector<point>& v) -> std::vector<point> {
 };
 \end{lstlisting}
 
-\subsubsection*{求凸包&判断点与凸包关系}
+\subsubsection*{求凸包 and 判断点与凸包关系}
 \begin{lstlisting}[style=cpp]
 #include<bits/stdc++.h>
 #ifdef LOCAL
@@ -7493,8 +7493,79 @@ auto op = [](T a, T b) -> T {
 OpQueue<T, decltype(op)> a(e, op);
 \end{lstlisting}
 
+\subsection{Fast GCD}
+\(O(V)\) 预处理, \(O(1)\) 查询 GCD.
+\begin{lstlisting}[style=cpp]
+/* fast GCD @ luogu shit */
+const int N = 5005, M = 1e6 + 5, S = 1000, P = 998244353;
 
+int _a[M], _b[M], _c[M];
+int v[M], p[M], r;
+int f[S + 1][S + 1];
+int a[N], b[N];
 
+void Init() {
+    _a[1] = _b[1] = _c[1] = 1;
+    for (int i = 2; i <= M - 5; ++i) {
+        if (!v[i]) {
+            p[++r] = i;
+            _a[i] = _b[i] = 1, _c[i] = i;
+        }
+        int tp;
+        for (int j = 1; j <= r && (tp = i * p[j]) <= M - 5; ++j) {
+            v[tp] = 1;
+            _a[tp] = _a[i] * p[j];
+            _b[tp] = _b[i];
+            _c[tp] = _c[i];
+            if (_a[tp] > _b[tp]) {
+                swap(_a[tp], _b[tp]);
+                if (_b[tp] > _c[tp]) {
+                    swap(_b[tp], _c[tp]);
+                }
+            }
+            if (!(i % p[j])) {
+                break;
+            }
+        }
+    }
 
+    for (int i = 1; i <= S; ++i) {
+        f[0][i] = f[i][0] = i;
+        for (int j = 1; j <= S; ++j) {
+            f[i][j] = f[j % i][i];
+        }
+    }
+    return;
+}
+
+int gcd(int x, int y) {
+    int A = 1, tp = f[_a[x]][y % _a[x]];
+    A *= tp;
+    y /= tp;
+    tp = f[_b[x]][y % _b[x]];
+    A *= tp;
+    y /= tp;
+    tp = (v[_c[x]] ? f[_c[x]][y % _c[x]] : (y % _c[x] ? 1 : _c[x]));
+    A *= tp;
+    y /= tp;
+    return A;
+}    
+\end{lstlisting}
+
+\subsection{\(q \equiv \frac{a}{b} \bmod mod\)}
+
+\begin{lstlisting}[style=cpp]
+/* find q =  a / b @ luogu shit*/
+pair<int, int> approx(int mod, int q, int bound) {
+    int x = q, y = mod, a = 1, b = 0;
+    while (x > bound) {
+        swap(x, y), swap(a, b);
+        a -= x / y * b;
+        x %= y;
+    }
+    return make_pair(x, a);
+}
+
+\end{lstlisting}
 
 \end{document}
