@@ -4172,7 +4172,7 @@ int main() {
 }    
 \end{lstlisting}
 
-\subsection*{ Lagrange interpolation }
+\subsection{ Lagrange interpolation }
 
 \subsubsection*{ 一般的插值 }
 
@@ -4204,7 +4204,7 @@ auto lagrange = (const vi& x, const vi& y, int n, int k) {
 \subsubsection*{ 坐标连续的插值 }
 
 给出的点是 $(0, y_0), \cdots, (n, y_n)$.
-\begin{lstlisting}
+\begin{lstlisting}[style=cpp]
 /* interpolation */
 auto lagrange(int n, std::vector<Z> y, int x) -> Z {
     if (x <= n) return y[x];
