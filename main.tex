@@ -4185,6 +4185,7 @@ int main() {
 直接带入 \(k\) 并且取模即可, 时间复杂度 $O(n^2)$.
 
 \begin{lstlisting}[style=cpp]
+/* interpolation */
 auto lagrange = (const vi& x, const vi& y, int n, int k) {
     for (int i = 1; i <= n; i++) {
         LL s1 = y[i] % mod, s2 = 1ll;
@@ -4202,16 +4203,23 @@ auto lagrange = (const vi& x, const vi& y, int n, int k) {
 
 \subsubsection*{ 坐标连续的插值 }
 
-给出的点是 $(i, y_i)$.
-\[
-    \begin{aligned}
-         & f(x) = \sum_{i=1}^{n} y_i \prod_{j \neq i} \frac{x - x_j}{x_i - x_j}                                          \\
-         & = \sum_{i=1}^{n} y_i \prod_{j \neq i} \frac{x - j}{i - j}                                                     \\
-         & = \sum_{i=1}^{n} y_i \cdot \frac{\prod\limits_{j=1}^n (x - j)}{(x - i) (-1)^{n+1-i}(i-1)!(n+1-i)!}            \\
-         & = \left( \prod_{j=1}^n (x - j) \right) \left(\sum_{i=1}^n \frac{(-1)^{n+1-i}y_i}{(x-i)(i-1)!(n+1-i)!}\right),
-    \end{aligned}
-\]
-时间复杂度为 \(O(n)\).
+给出的点是 $(0, y_0), \cdots, (n, y_n)$.
+\begin{lstlisting}
+/* interpolation */
+auto lagrange(int n, std::vector<Z> y, int x) -> Z {
+    if (x <= n) return y[x];
+    Z s1 = 1, s2 = 0;
+    for (int i = 1; i <= n; i++) s1 *= (x - i);
+    for (int i = 1; i <= n; i++) {
+        Z res = ((n - i) & 1 ? -y[i] : y[i]);
+        res /= (x - i);
+        res *= fiv[i - 1];
+        res *= fiv[n - i];
+        s2 += res;
+    }
+    return s1 * s2;
+}
+\end{lstlisting}
 
 \newpage
 \section{ math - game theory }
